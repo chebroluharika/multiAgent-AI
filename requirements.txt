@@ -1,0 +1,11 @@
+crewai
+langchain
+langchain-community
+python-dotenv
+argparse
+requests
+psycopg2-binary
+ollama
+agno
+crewai_tools
+langchain-huggingface
