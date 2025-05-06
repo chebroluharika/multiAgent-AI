@@ -1,0 +1,25 @@
+*~
+.*.sw[nmop]
+*.pyc
+.tox
+__pycache__
+__pycache__/
+ven*
+*egg*
+.idea
+*.iml
+config.yaml
+.vscode
+*.bak
+result.html
+result.props
+*.crt
+*.key
+
+# ignore Logs
+*.log
+
+*/__pycache__/*
+**/.coverage
+**/__pycache__/**
+**/__pycache__
