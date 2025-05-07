@@ -1,18 +1,53 @@
-from langchain.tools import Tool
-from langchain.memory import ConversationBufferMemory
-from langchain.agents import initialize_agent, AgentType
-from langchain_community.llms import Ollama
-from metrics_operations import check_degraded_pgs, check_recent_osd_crashes, get_ceph_daemon_counts, get_cluster_health, get_diskoccupation, get_high_latency_osds
 from agno.storage.agent.postgres import PostgresAgentStorage
+from langchain.agents import AgentType, initialize_agent
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import Tool
+from langchain_community.llms import Ollama
 
+from Observability.backend.connection import get_db_string
+
+from .metrics_operations import (
+    check_degraded_pgs,
+    check_recent_osd_crashes,
+    get_ceph_daemon_counts,
+    get_cluster_health,
+    get_diskoccupation,
+    get_high_latency_osds,
+)
+
+# Ignore get_cluster_health (this is for CephViz tool)
 # Define Tools
 tools = [
-    Tool(name="Get disk occupation", func=get_diskoccupation, description="Fetches the disk occupation per node."),
-    Tool(name="Check degraded PGs", func=check_degraded_pgs, description="Checks degraded PGs."),
-    Tool(name="Check recent OSD crashes", func=check_recent_osd_crashes, description="Checks recent OSD crashes."),
-    Tool(name="Check cluster health", func=get_cluster_health, description="Check cluster health"),
-    Tool(name="Check high latency OSDs", func=get_high_latency_osds, description="Check high latency OSDs"),
-    Tool(name="Check count of daemons", func=get_ceph_daemon_counts, description="Check count of daemons")
+    Tool(
+        name="Get disk occupation",
+        func=get_diskoccupation,
+        description="Fetches the disk occupation per node.",
+    ),
+    Tool(
+        name="Check degraded PGs",
+        func=check_degraded_pgs,
+        description="Checks degraded PGs.",
+    ),
+    Tool(
+        name="Check recent OSD crashes",
+        func=check_recent_osd_crashes,
+        description="Checks recent OSD crashes.",
+    ),
+    Tool(
+        name="Check cluster health",
+        func=get_cluster_health,
+        description="Check cluster health",
+    ),
+    Tool(
+        name="Check high latency OSDs",
+        func=get_high_latency_osds,
+        description="Check high latency OSDs",
+    ),
+    Tool(
+        name="Check count of daemons",
+        func=get_ceph_daemon_counts,
+        description="Check count of daemons",
+    ),
 ]
 
 # Memory for Conversation
@@ -22,11 +57,11 @@ chat_history = memory.load_memory_variables({}).get("chat_history", [])
 if not isinstance(chat_history, list):
     chat_history = []
 
-# Language Model 
-'''llm = InferenceClient(
+# Language Model
+"""llm = InferenceClient(
     model="mistralai/Mistral-7B-Instruct-v0.1",
     token=HUGGINGFACEHUB_API_TOKEN
-)'''
+)"""
 llm = Ollama(model="llama3")
 
 agent_prompt = """You are a Ceph observability assistant. Only answer questions related to Ceph cluster status, health, storage, and performance. 
@@ -40,14 +75,15 @@ Do not make assumptions. Only respond with the correct tool.
 Do NOT guess. Only respond using the correct tool.
 """
 
+
 def query_llm(prompt: str):
     return llm.text_generation(prompt, max_new_tokens=100)
 
+
 # DB connection
-db_url = 'postgresql://postgres:postgres@localhost:5432/postgres'
 storage = PostgresAgentStorage(
     table_name="agent_sessions",
-    db_url=db_url,
+    db_url=get_db_string(),
 )
 
 # Initialize AI Agent
@@ -59,12 +95,14 @@ agent = initialize_agent(
     agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
     memory=memory,
     verbose=True,
-    handle_parsing_errors=True
+    handle_parsing_errors=True,
 )
+
 
 # Process query
 def process_query(query: str):
     return agent.run(query)
+
 
 def main_agentic():
     while True:
@@ -72,7 +110,7 @@ def main_agentic():
         if query.lower() == "exit":
             print("👋 Exiting agent...")
             break
-        
+
         response = process_query(query)
         print(response)
 

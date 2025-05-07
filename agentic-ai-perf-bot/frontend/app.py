@@ -337,6 +337,8 @@ suggested_questions = [
     "Get me Current Ceph status.",
 ]
 
+# Use all the tools
+
 # Define Tools
 tools = [
     Tool(

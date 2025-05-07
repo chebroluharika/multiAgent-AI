@@ -1,12 +1,12 @@
-from langchain.agents import initialize_agent, AgentType
-from langchain.tools import Tool
-from langchain.memory import ConversationBufferMemory
 import asyncio
-import streamlit as st
 import re
-import bugzilla
 from datetime import datetime
 
+import bugzilla
+import streamlit as st
+from langchain.agents import AgentType, initialize_agent
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import Tool
 from langchain_ollama import OllamaLLM
 
 # Bugzilla API Base URL
@@ -15,7 +15,7 @@ BUGZILLA_URL = "https://bugzilla.redhat.com"
 st.set_page_config(page_title="Bug Intelligence", page_icon="🐞", layout="centered")
 
 
-if  "authenticated_user" not in st.session_state:
+if "authenticated_user" not in st.session_state:
     st.session_state.authenticated_user = False
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
@@ -23,18 +23,24 @@ if "chat_history" not in st.session_state:
 if not st.session_state.authenticated_user:
     st.sidebar.subheader("Bugzilla Login")
     username = st.sidebar.text_input("👤 Username", placeholder="Enter username")
-    api_key = st.sidebar.text_input("🔑 Bugzilla API Key", type="password", placeholder="Enter your Bugzilla API Key")
+    api_key = st.sidebar.text_input(
+        "🔑 Bugzilla API Key",
+        type="password",
+        placeholder="Enter your Bugzilla API Key",
+    )
 
     if st.sidebar.button("Login"):
         if api_key:
-        # Attempt login using API Key
+            # Attempt login using API Key
             bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key=api_key)
 
             if bzapi.logged_in:
-                    st.session_state["bugzilla_token"] = api_key
-                    st.sidebar.success("Login successful!")
-                    st.sidebar.success(f"💬Hi {username} , I am Bug Intelligence (BI)! I am eager to help You!")
-                    st.session_state.authenticated_user = True
+                st.session_state["bugzilla_token"] = api_key
+                st.sidebar.success("Login successful!")
+                st.sidebar.success(
+                    f"💬Hi {username} , I am Bug Intelligence (BI)! I am eager to help You!"
+                )
+                st.session_state.authenticated_user = True
             else:
                 st.sidebar.error("Login failed. Invalid API Key.")
         else:
@@ -42,6 +48,8 @@ if not st.session_state.authenticated_user:
 if st.session_state.authenticated_user:
     api_key = st.session_state["bugzilla_token"]
     bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key=api_key)
+
+
 # bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key="Mf5LWqGyfWxDEojhk1q5vTMpCc4ByfmvhOCIk8Hh")
 def serialize_bug_details(bug):
     """
@@ -56,10 +64,15 @@ def serialize_bug_details(bug):
         "status": bug.status,
         "resolution": bug.resolution,
         "summary": bug.summary,
-        "creation_time": datetime.strptime(bug.creation_time.value, "%Y%m%dT%H:%M:%S").strftime('%m/%d/%Y'),
-        "last_change_time": datetime.strptime(bug.last_change_time.value, "%Y%m%dT%H:%M:%S").strftime('%m/%d/%Y'),
-        "comments": get_comments(bug.id)
+        "creation_time": datetime.strptime(
+            bug.creation_time.value, "%Y%m%dT%H:%M:%S"
+        ).strftime("%m/%d/%Y"),
+        "last_change_time": datetime.strptime(
+            bug.last_change_time.value, "%Y%m%dT%H:%M:%S"
+        ).strftime("%m/%d/%Y"),
+        "comments": get_comments(bug.id),
     }
+
 
 def get_bug_details(bug_id):
     """
@@ -69,6 +82,7 @@ def get_bug_details(bug_id):
     out = serialize_bug_details(bug)
     return out
 
+
 def serialize_comments(comments):
     """
     Serialize comments, converting DateTime objects to strings.
@@ -76,18 +90,23 @@ def serialize_comments(comments):
     comments_dict = {}
     out_dict = {}
     for comment in comments:
-        if comment['time']:
-            comment['time'] = datetime.strptime(comment["time"].value, "%Y%m%dT%H:%M:%S").strftime('%m/%d/%Y')
-            comments_dict['time'] = comment['time']
+        if comment["time"]:
+            comment["time"] = datetime.strptime(
+                comment["time"].value, "%Y%m%dT%H:%M:%S"
+            ).strftime("%m/%d/%Y")
+            comments_dict["time"] = comment["time"]
 
-        if comment['creation_time']:
-            comment['creation_time'] = datetime.strptime(comment["creation_time"].value, "%Y%m%dT%H:%M:%S").strftime('%m/%d/%Y')
-            comments_dict['creation_time'] = comment['creation_time']
-        comments_dict['creator'] = comment['creator']
-        comments_dict['bug_comments'] = comment['text']
-        comments_dict['comment_count'] = comment['count']
-        out_dict [f'comment_{comment["count"]}'] = comments_dict
+        if comment["creation_time"]:
+            comment["creation_time"] = datetime.strptime(
+                comment["creation_time"].value, "%Y%m%dT%H:%M:%S"
+            ).strftime("%m/%d/%Y")
+            comments_dict["creation_time"] = comment["creation_time"]
+        comments_dict["creator"] = comment["creator"]
+        comments_dict["bug_comments"] = comment["text"]
+        comments_dict["comment_count"] = comment["count"]
+        out_dict[f"comment_{comment['count']}"] = comments_dict
     return out_dict
+
 
 def get_comments(bug_id):
     """
@@ -97,7 +116,8 @@ def get_comments(bug_id):
     serialized_comments = serialize_comments(comments)
     return serialized_comments
 
-def get_bugs_list_by_status_and_product(product_status:str):
+
+def get_bugs_list_by_status_and_product(product_status: str):
     """
     Retrieve/returns list of bugs for a given product and status.
     """
@@ -105,21 +125,25 @@ def get_bugs_list_by_status_and_product(product_status:str):
     # product = data["product"]
     # status = data["status"]
     product_status = product_status.split(",")
-    product,status = product_status[0],product_status[1]
+    product, status = product_status[0], product_status[1]
     query_data = bzapi.query(
-        {'bug_status': status,
-         'columnlist': 'product,component,assigned_to,bug_status,short_desc,changeddate,bug_severity',
-         'list_id': '13553952',
-         'order': 'severity, ',
-         'product': product,
-         'query_format': 'advanced',
-         'limit': 0})
+        {
+            "bug_status": status,
+            "columnlist": "product,component,assigned_to,bug_status,short_desc,changeddate,bug_severity",
+            "list_id": "13553952",
+            "order": "severity, ",
+            "product": product,
+            "query_format": "advanced",
+            "limit": 0,
+        }
+    )
     data = [str(bug) for bug in query_data]
     data_list = []
     for d in data:
-        data_list.extend(re.findall(r'\d{7}', d))
+        data_list.extend(re.findall(r"\d{7}", d))
     # details = [ get_bug_details(bug_id) for bug_id in data_list]
     return {"bug id list": data_list}
+
 
 def helper_function_for_get_data(data):
     bugs = {}
@@ -132,32 +156,39 @@ def helper_function_for_get_data(data):
         bugs[bug_id].update(details)
 
     table_header = ["Bug ID", "Summary", "Assignee", "Creation Time"]
-    table = [table_header] + [[bug_id, details["summary"], details["assignee"], details["creation_time"]] for bug_id, details in bugs.items()]
+    table = [table_header] + [
+        [bug_id, details["summary"], details["assignee"], details["creation_time"]]
+        for bug_id, details in bugs.items()
+    ]
     return table
 
-def get_bugs_reported_list_by_email_id(data:str):
+
+def get_bugs_reported_list_by_email_id(data: str):
     """
     Retrieve/returns list of bugs reported by a given email_id
     """
-    email_id , duration_in_days = data.split(",")
-    duration_in_days = re.findall(r'\d+', str(duration_in_days))[0]
+    email_id, duration_in_days = data.split(",")
+    duration_in_days = re.findall(r"\d+", str(duration_in_days))[0]
     query_data = bzapi.query(
         {
-         'list_id': '13553952',
-         'email1': email_id,
-         'emailreporter1': '1',
-         'query_format': 'advanced',
-         'v1': "-" + str(duration_in_days) +"D",
-         'o1': 'greaterthan',
-         'f1': "creation_ts",
-         'limit': 0})
-         #'offset': 0})
+            "list_id": "13553952",
+            "email1": email_id,
+            "emailreporter1": "1",
+            "query_format": "advanced",
+            "v1": "-" + str(duration_in_days) + "D",
+            "o1": "greaterthan",
+            "f1": "creation_ts",
+            "limit": 0,
+        }
+    )
+    #'offset': 0})
     data = []
     for bug in query_data:
-       bug_data = bug.get_raw_data()
-       data.append(str(bug_data['id']))
+        bug_data = bug.get_raw_data()
+        data.append(str(bug_data["id"]))
     # data = [str(bug) for bug in query_data]
-    return helper_function_for_get_data({"bug_id_list" :data})
+    return helper_function_for_get_data({"bug_id_list": data})
+
 
 def get_the_bug_list(product_component):
     """
@@ -172,31 +203,35 @@ def get_the_bug_list(product_component):
     queried_bugs = bzapi.query(query1)
     ids = [bug.id for bug in queried_bugs]
     print(f"Queried {len(ids)} ids")
-    return {"bug_id_list":ids}
+    return {"bug_id_list": ids}
+
 
 def get_bugs_assigned_list_by_email_id(data):
     """
     Retrieve/returns list of bugs reported by a given email_id
     """
-    email_id , duration_in_days = data.split(",")
-    duration_in_days = re.findall(r'\d+', str(duration_in_days))[0]
+    email_id, duration_in_days = data.split(",")
+    duration_in_days = re.findall(r"\d+", str(duration_in_days))[0]
     query_data = bzapi.query(
         {
-            'list_id': '13553952',
-            'email1': "adking@redhat.com",
-            'emailassigned_to1': 1,
-            'query_format': 'advanced',
-            'v1': "-" + str(duration_in_days) + "D",
-            'o1': 'greaterthan',
-            'f1': "creation_ts",
-            'limit': 0})
-         #'offset': 0})
+            "list_id": "13553952",
+            "email1": "adking@redhat.com",
+            "emailassigned_to1": 1,
+            "query_format": "advanced",
+            "v1": "-" + str(duration_in_days) + "D",
+            "o1": "greaterthan",
+            "f1": "creation_ts",
+            "limit": 0,
+        }
+    )
+    #'offset': 0})
     data = []
     for bug in query_data:
-       bug_data = bug.get_raw_data()
-       data.append(str(bug_data['id']))
+        bug_data = bug.get_raw_data()
+        data.append(str(bug_data["id"]))
     # data = [str(bug) for bug in query_data]
-    return helper_function_for_get_data({"bug_id_list" :data})
+    return helper_function_for_get_data({"bug_id_list": data})
+
 
 def get_all_bugs_action_by_email(data):
     """
@@ -210,8 +245,15 @@ def get_all_bugs_action_by_email(data):
 async def fetch_bugs_async(product, component, limit=100):
     def fetch_bugs(offset):
         query = bzapi.build_query(product, component)
-        query["include_fields"] = ["id", "summary", "status", "priority", "assigned_to", "creation_time",
-                                   "last_change_time"]
+        query["include_fields"] = [
+            "id",
+            "summary",
+            "status",
+            "priority",
+            "assigned_to",
+            "creation_time",
+            "last_change_time",
+        ]
         query["limit"] = limit
         query["offset"] = offset
         return bzapi.query(query)
@@ -239,12 +281,12 @@ async def fetch_bugs_async(product, component, limit=100):
             all_bugs_details[f"bug {count}"]["status"] = bug.status
             all_bugs_details[f"bug {count}"]["priority"] = bug.priority
             all_bugs_details[f"bug {count}"]["assigned to"] = bug.assigned_to
-            all_bugs_details[f"bug {count}"]["creation time"] = datetime.strptime(bug.creation_time.value,
-                                                                                  "%Y%m%dT%H:%M:%S").strftime(
-                '%m/%d/%Y')
-            all_bugs_details[f"bug {count}"]["last change time"] = datetime.strptime(bug.last_change_time.value,
-                                                                                     "%Y%m%dT%H:%M:%S").strftime(
-                '%m/%d/%Y')
+            all_bugs_details[f"bug {count}"]["creation time"] = datetime.strptime(
+                bug.creation_time.value, "%Y%m%dT%H:%M:%S"
+            ).strftime("%m/%d/%Y")
+            all_bugs_details[f"bug {count}"]["last change time"] = datetime.strptime(
+                bug.last_change_time.value, "%Y%m%dT%H:%M:%S"
+            ).strftime("%m/%d/%Y")
 
             count += 1
 
@@ -261,18 +303,20 @@ def get_all_bugs_details_fast(product_component):
 # print(get_all_bugs_details_fast("Red Hat Ceph Storage,RGW"))
 
 
+# Use only get_bug_details tool ignore everything else
+
 # Define tools
 tools = [
     Tool(
         name="get bug details of a single bug",
         func=get_bug_details,
-        description="give the out of the bug id, this tool will give bug details."
+        description="give the out of the bug id, this tool will give bug details.",
     ),
     Tool(
         func=get_comments,
         name="get bug comments of a single bug",
-        description="give the out of the bug id, this tool will give bug comments with details"+
-                    " like time, creator,  bug_comments, comment_count."
+        description="give the out of the bug id, this tool will give bug comments with details"
+        + " like time, creator,  bug_comments, comment_count.",
     ),
     # Tool(
     #     func=get_bugs_list_by_status_and_product,
@@ -283,12 +327,12 @@ tools = [
     Tool(
         func=get_bugs_reported_list_by_email_id,
         name="get list of bugs reported for a given email and duration in days",
-        description="lists all the bugs and its details reported by the email and time in days provided as a python string \"email,days\"",
+        description='lists all the bugs and its details reported by the email and time in days provided as a python string "email,days"',
     ),
     Tool(
         func=get_bugs_assigned_list_by_email_id,
         name="get list of bugs assigned for a given email and duration in days",
-        description="lists all the bugs and its details assigned by the email and time in days provided as a python string \"email,days\"",
+        description='lists all the bugs and its details assigned by the email and time in days provided as a python string "email,days"',
     ),
     # Tool(
     #     func=get_the_bug_list,
@@ -300,9 +344,8 @@ tools = [
         func=get_all_bugs_details_fast,
         name="give the list of all bugs details fast",
         description="Provided product (Red Hat Ceph Storage) and component (RGW, Cephadm) "
-                    + "tool will  fetches the bug summary of all the bugs of that product and components"
-    )
-
+        + "tool will  fetches the bug summary of all the bugs of that product and components",
+    ),
 ]
 
 # Initialize the Ollama model
@@ -323,6 +366,7 @@ agent = initialize_agent(
 
 print("👋 Exiting agent...")
 
+
 def process_query(query: str):
     if not st.session_state.authenticated_user:
         return "⚠️ Please log in first."
@@ -334,7 +378,7 @@ def process_query(query: str):
 # Streamlit UI
 st.title("💬BUG INTELLIGENCE: AI BUG Chatbot")
 
-#Chat Interface
+# Chat Interface
 
 
 for query, response in st.session_state.chat_history:

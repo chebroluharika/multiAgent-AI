@@ -1,31 +1,38 @@
-import sys
 import os
+import sys
 
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from connection import get_db_conn
 
+
 # Tool Functions
 def get_diskoccupation(*args, **kwargs):
+    print("get_diskoccupation function called")
     query_disk_occupation = """
         SELECT 
             labels->>'instance' AS instance, 
             SUM(value) AS total_disk_occupation 
         FROM ceph_cephdiskoccupation_metrics 
         GROUP BY instance;
-        """    
+        """
+
     conn = get_db_conn()
     if not conn:
-        return "❌ Database connection failed."  
+        return "❌ Database connection failed."
     cursor = conn.cursor()
-    try:     
+    try:
         cursor.execute(query_disk_occupation)
         disk_occupation_results = cursor.fetchall()
 
         print("\n### Ceph Disk Occupation Per Node ###")
+
+        occupation_results = []
         for row in disk_occupation_results:
-            print(f"Node: {row[0]}, Disk Occupation: {row[1]}")
-        
-        return disk_occupation_results
+            occupation_results.append(f"Node: {row[0]}, Disk Occupation: {row[1]}")
+
+        print(f"{occupation_results = }")
+
+        return "\n".join(occupation_results)
     except Exception as e:
         print("❌ Error getting disk occupation status:", e)
     finally:
@@ -45,10 +52,9 @@ def check_degraded_pgs(*args, **kwargs):
     """
     conn = get_db_conn()
     if not conn:
-        return "❌ Database connection failed."  
+        return "❌ Database connection failed."
     cursor = conn.cursor()
-    try:     
-        
+    try:
         cursor.execute(query)
         result = cursor.fetchone()[0]
 
@@ -56,13 +62,14 @@ def check_degraded_pgs(*args, **kwargs):
         cursor.close()
         conn.close()
         return result
-    
+
     except Exception as e:
         print("❌ Error checking degraded PGs:", e)
     finally:
         cursor.close()
         conn.close()
-        
+
+
 def check_recent_osd_crashes(*args, **kwargs):
     # Query to check if any failed OSDs exist
     query = """
@@ -89,7 +96,7 @@ def check_recent_osd_crashes(*args, **kwargs):
         return "❌ Database connection failed."
     cursor = conn.cursor()
 
-    try:        
+    try:
         cursor.execute(query)
         crashed_osds = cursor.fetchall()
 
@@ -101,16 +108,17 @@ def check_recent_osd_crashes(*args, **kwargs):
             return response  # Return a formatted response with OSD crash details
         else:
             return "✅ No OSD failures detected."
-        
+
     except Exception as e:
         return f"❌ Error executing query: {e}"
     finally:
         cursor.close()
         conn.close()
-        
+
+
 def get_cluster_health(*args, **kwargs):
     query = "SELECT MAX(value) FROM ceph_cephhealthstatus_metrics;"
-    
+
     conn = get_db_conn()
     if not conn:
         return {"status": "error", "message": "❌ Database connection failed."}
@@ -119,7 +127,7 @@ def get_cluster_health(*args, **kwargs):
     try:
         cursor.execute(query)
         result = cursor.fetchone()
-        
+
         if not result or result[0] is None:
             return {"status": "error", "message": "⚠️ No health data available."}
 
@@ -128,18 +136,25 @@ def get_cluster_health(*args, **kwargs):
         health_messages = {
             0: "🟢 Cluster is healthy (HEALTH_OK)",
             1: "🟡 Cluster has warnings (HEALTH_WARN)",
-            2: "🔴 Cluster has critical issues (HEALTH_ERR)"
+            2: "🔴 Cluster has critical issues (HEALTH_ERR)",
         }
 
-        return {"status": "success", "health": health_messages.get(health_status, "Unknown health status")}
-    
+        return {
+            "status": "success",
+            "health": health_messages.get(health_status, "Unknown health status"),
+        }
+
     except Exception as e:
-        return {"status": "error", "message": f"❌ Error fetching cluster health: {str(e)}"}
-    
+        return {
+            "status": "error",
+            "message": f"❌ Error fetching cluster health: {str(e)}",
+        }
+
     finally:
         cursor.close()
         conn.close()
-        
+
+
 def get_high_latency_osds(*args, **kwargs):
     query = """
     SELECT 
@@ -151,17 +166,16 @@ def get_high_latency_osds(*args, **kwargs):
     ORDER BY max_latency DESC
     LIMIT 5;
     """
-    
+
     conn = get_db_conn()
     if not conn:
         return {"status": "error", "message": "❌ Database connection failed."}
 
     cursor = conn.cursor()
     try:
+        start_time = "2025-02-14 16:40:00"
+        end_time = "2025-02-17 16:40:10"
 
-        start_time = '2025-02-14 16:40:00'
-        end_time = '2025-02-17 16:40:10'
-        
         cursor.execute(query, (start_time, end_time))
         results = cursor.fetchall()
 
@@ -169,9 +183,18 @@ def get_high_latency_osds(*args, **kwargs):
             return {"status": "error", "message": "⚠️ No high-latency OSDs found."}
 
         latency_thresholds = {
-            "low": {"status": "🟢 Latency is within normal range", "description": "The OSD is performing well with acceptable latency."},
-            "medium": {"status": "🟡 Latency is higher than usual", "description": "The OSD has some latency, but it is not critical."},
-            "high": {"status": "🔴 High latency detected", "description": "The OSD is experiencing significant latency, which may impact cluster performance."}
+            "low": {
+                "status": "🟢 Latency is within normal range",
+                "description": "The OSD is performing well with acceptable latency.",
+            },
+            "medium": {
+                "status": "🟡 Latency is higher than usual",
+                "description": "The OSD has some latency, but it is not critical.",
+            },
+            "high": {
+                "status": "🔴 High latency detected",
+                "description": "The OSD is experiencing significant latency, which may impact cluster performance.",
+            },
         }
 
         high_latency_osds = []
@@ -189,23 +212,27 @@ def get_high_latency_osds(*args, **kwargs):
 
             latency_info = latency_thresholds[latency_category]
 
-            high_latency_osds.append({
-                "osd_id": osd_id,
-                "max_latency": max_latency,
-                "status": latency_info["status"],
-                "description": latency_info["description"]
-            })
+            high_latency_osds.append(
+                {
+                    "osd_id": osd_id,
+                    "max_latency": max_latency,
+                    "status": latency_info["status"],
+                    "description": latency_info["description"],
+                }
+            )
 
-        return {
-            "high_latency_osds": high_latency_osds
-        }
+        return {"high_latency_osds": high_latency_osds}
 
     except Exception as e:
-        return {"status": "error", "message": f"❌ Error fetching high-latency OSDs: {str(e)}"}
-    
+        return {
+            "status": "error",
+            "message": f"❌ Error fetching high-latency OSDs: {str(e)}",
+        }
+
     finally:
         cursor.close()
         conn.close()
+
 
 def get_ceph_daemon_counts(*args, **kwargs):
     query = """
@@ -232,11 +259,11 @@ def get_ceph_daemon_counts(*args, **kwargs):
         return {"status": "success", "message": message}
 
     except Exception as e:
-        return {"status": "error", "message": f"❌ Error fetching Ceph daemon counts: {str(e)}"}
+        return {
+            "status": "error",
+            "message": f"❌ Error fetching Ceph daemon counts: {str(e)}",
+        }
 
     finally:
         cursor.close()
         conn.close()
-
-
-

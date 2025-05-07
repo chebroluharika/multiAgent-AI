@@ -1,9 +1,14 @@
-import requests
 import json
 import re
-import paramiko
 
-from backend.connection import get_db_conn
+import paramiko
+import requests
+from connection import get_db_conn
+
+TABLE_PREFIX = "ceph_"
+TABLE_SUFFIX = "_metrics"
+LOCAL_SAMPLE_METRICS_FILE = "../../data/sample_metrics.txt"
+
 
 # Function to parse labels
 def parse_labels(label_str):
@@ -14,6 +19,7 @@ def parse_labels(label_str):
     for match in matches:
         labels[match[0]] = match[1]
     return labels
+
 
 def get_active_mgr_ip(cluster_ip):
     try:
@@ -47,12 +53,15 @@ def get_active_mgr_ip(cluster_ip):
 
 
 # Fetch Prometheus metrics
-def scrape_metrics(cluster_ip):
-    ip = get_active_mgr_ip(cluster_ip)
-    url = f"http://{ip}:9283/metrics"
-    response = requests.get(url)
-    metrics_data = response.text.splitlines()
-    metrics_data = [line for line in metrics_data if line.strip()]
+def scrape_metrics(cluster_ip: str | None = None):
+    if cluster_ip:
+        ip = get_active_mgr_ip(cluster_ip)
+        url = f"http://{ip}:9283/metrics"
+        response = requests.get(url)
+        metrics_data = response.text.splitlines()
+    else:
+        metrics_data = open("../../data/sample_metrics.txt", "r").read().splitlines()
+        metrics_data = [line for line in metrics_data if line.strip()]
 
     # Connect to PostgreSQL once
     conn = get_db_conn()
@@ -70,13 +79,21 @@ def scrape_metrics(cluster_ip):
 
         print("=================================")
         print(line)
-        metric_parts = line.rsplit(" ", 1)  # Split only on the last space to separate the value
+        metric_parts = line.rsplit(
+            " ", 1
+        )  # Split only on the last space to separate the value
         metric_name_and_labels = metric_parts[0]
         metric_value_str = metric_parts[1]
 
         # Extract metric name and labels
-        metric_name = metric_name_and_labels.split("{")[0]  # Extract metric name before '{'
-        metric_labels_str = metric_name_and_labels.split("{")[1][:-1] if "{" in metric_name_and_labels else ""  # Extract labels inside '{}'
+        metric_name = metric_name_and_labels.split("{")[
+            0
+        ]  # Extract metric name before '{'
+        metric_labels_str = (
+            metric_name_and_labels.split("{")[1][:-1]
+            if "{" in metric_name_and_labels
+            else ""
+        )  # Extract labels inside '{}'
 
         # Parse the labels into a dictionary
         metric_labels = parse_labels(metric_labels_str)
@@ -90,6 +107,12 @@ def scrape_metrics(cluster_ip):
 
         # Create table name dynamically from metric name
         table_name = f"{metric_name.lower().replace('_', '')}"  # e.g., ceph_mon_quorum_status_metrics
+        table_name = f"{TABLE_PREFIX}{table_name}{TABLE_SUFFIX}"
+
+        cur = conn.cursor()
+
+        delete_table_query = f"DROP TABLE IF EXISTS {table_name}"
+        cur.execute(delete_table_query)
 
         # Create the table dynamically based on the metric name if it doesn't exist
         create_table_query = f"""
@@ -114,7 +137,9 @@ def scrape_metrics(cluster_ip):
             insert_query = f"INSERT INTO {table_name} (metric_name, labels, value) VALUES (%s, %s, %s)"
             cur.execute(insert_query, (metric_name, labels_json, metric_value))
             conn.commit()
-            print(f"Inserted {metric_name} with labels {labels_json} and value {metric_value} into {table_name}")
+            print(
+                f"Inserted {metric_name} with labels {labels_json} and value {metric_value} into {table_name}"
+            )
 
         except Exception as err:
             print(f"Database error: {err}")
@@ -124,3 +149,7 @@ def scrape_metrics(cluster_ip):
 
     # Close the connection
     conn.close()
+
+
+if __name__ == "__main__":
+    scrape_metrics()

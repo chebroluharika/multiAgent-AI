@@ -1,32 +1,25 @@
-import getpass
 import json
 import os
 import re
 import sys
-import streamlit as st
-import paramiko
 import warnings
-import logging
-import time
-from dotenv import load_dotenv
-from langchain.tools import Tool
-from langchain_huggingface import HuggingFaceEndpoint
-from langchain_community.llms import Ollama
-from langchain.memory import ConversationBufferMemory
-from langchain.agents import initialize_agent, AgentType
-from langchain.llms import HuggingFaceEndpoint
-from backend.functionality import CephOperations  # Import CephOperations from backend.py
-from pydantic import BaseModel, Field
 from typing import Any, Dict
 
-from ibm_watson_machine_learning.foundation_models import Model
-from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams
-from ibm_watson_machine_learning.foundation_models.extensions.langchain import WatsonxLLM
+import paramiko
 
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 # Add the parent directory to sys.path to access Backend/
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from backend import session_manager
+from .backend import session_manager
+from .backend.functionality import (
+    CephOperations,  # Import CephOperations from backend.py
+)
+from dotenv import load_dotenv
+from langchain.agents import AgentType, initialize_agent
+from langchain.memory import ConversationBufferMemory
+from langchain.tools import Tool
+from langchain_community.llms import Ollama
+from pydantic import BaseModel, Field
 
 # Load environment variables
 load_dotenv()
@@ -39,7 +32,7 @@ warnings.filterwarnings("ignore", category=FutureWarning)
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 # Suppress Paramiko warnings
-paramiko.util.log_to_file("/dev/null")  # Redirects logs to /dev/null (Linux/macOS)
+# paramiko.util.log_to_file("/dev/null")  # Redirects logs to /dev/null (Linux/macOS)
 
 HUGGINGFACEHUB_API_TOKEN = os.getenv("HUGGINGFACEHUB_API_TOKEN")
 
@@ -50,6 +43,7 @@ ceph_ops = CephOperations()
 # TODO: Persist this in a file or DB to retain connections after restart
 cluster_mapping = {}
 
+
 class DynamicModel(BaseModel):
     # Use a dictionary to hold arbitrary fields
     data: Dict[str, Any] = Field(default_factory=dict)
@@ -57,6 +51,7 @@ class DynamicModel(BaseModel):
     class Config:
         # Allow arbitrary types of data
         arbitrary_types_allowed = True
+
 
 # Function to parse the raw response dynamically
 def parse_dynamic_data(raw_data: Any) -> DynamicModel:
@@ -66,8 +61,10 @@ def parse_dynamic_data(raw_data: Any) -> DynamicModel:
             # Example conversion: You could split the string into a dict based on patterns
             # This is a basic example that assumes the string is a list of key-value pairs
             # Customize this to match the expected structure of the raw output.
-            raw_data = {"output": raw_data}  # Assuming the string represents some "output"
-        
+            raw_data = {
+                "output": raw_data
+            }  # Assuming the string represents some "output"
+
         # Now that the data is in a dictionary format, parse it using DynamicModel
         if isinstance(raw_data, dict):
             return DynamicModel(data=raw_data)
@@ -83,13 +80,15 @@ def format_dynamic_output(parsed_data: Any) -> str:
         parsed_data = parsed_data.data  # Extract the 'data' attribute
 
     formatted_output = "Response:\n"
-    
+
     # If the parsed data is still a dictionary, process it
     if isinstance(parsed_data, dict):
         for key, value in parsed_data.items():
             if isinstance(value, dict):
                 formatted_output += f"**{key}**: \n"
-                formatted_output += format_dynamic_output(DynamicModel(data=value))  # Recursive formatting
+                formatted_output += format_dynamic_output(
+                    DynamicModel(data=value)
+                )  # Recursive formatting
             elif isinstance(value, list):
                 formatted_output += f"**{key}**: \n"
                 for idx, item in enumerate(value):
@@ -98,7 +97,7 @@ def format_dynamic_output(parsed_data: Any) -> str:
                 formatted_output += f"**{key}**: {value}\n"
     else:
         formatted_output += "⚠️ Invalid response format.\n"
-    
+
     return formatted_output
 
 
@@ -107,6 +106,7 @@ def debug_tool_execution(action_name, action_input):
     """Debug function to print tool execution details."""
     print(f"\n🔍 DEBUG: Tool Called -> {action_name}")
     print(f"🔹 Input Passed: {action_input}")
+
 
 def connect_cluster(cluster_name, cluster_ip):
     """Prompts user for cluster details, connects via SSH, and stores session in session manager."""
@@ -122,7 +122,9 @@ def connect_cluster(cluster_name, cluster_ip):
 
     # Check if cluster is already connected
     if cluster_name in session_manager.cluster_data:
-        return json.dumps({"status": "success", "message": f"✅ {cluster_name} is already connected."})
+        return json.dumps(
+            {"status": "success", "message": f"✅ {cluster_name} is already connected."}
+        )
 
     # Attempt SSH connection
     ceph_ops = CephOperations()
@@ -132,42 +134,73 @@ def connect_cluster(cluster_name, cluster_ip):
         # Store in session manager with the same format as frontend.py
         session_manager.cluster_data[cluster_name] = {
             "ip": cluster_ip,
-            "session": session  # Store session for later use
+            "session": session,  # Store session for later use
         }
-        return json.dumps({"status": "success", "message": f"✅ Connected to {cluster_name} at {cluster_ip}"})
+        return json.dumps(
+            {
+                "status": "success",
+                "message": f"✅ Connected to {cluster_name} at {cluster_ip}",
+            }
+        )
     else:
-        return json.dumps({"status": "error", "message": "❌ Connection failed: Authentication failed."})
+        return json.dumps(
+            {
+                "status": "error",
+                "message": "❌ Connection failed: Authentication failed.",
+            }
+        )
 
 
-def fetch_session_of_cluster(cluster_name:str):
+def fetch_session_of_cluster(cluster_name: str):
     print("Fetches the session of the cluster")
     cluster_info = session_manager.cluster_data.get(cluster_name.strip())
     print("Cluster info: ", cluster_info)
     print("Cluster sessions: ", session_manager.cluster_data.get(cluster_name))
     if not cluster_info:
-        return json.dumps({"status": "error", "message": f"❌ No active session for {cluster_name}. Connect first."})
+        return json.dumps(
+            {
+                "status": "error",
+                "message": f"❌ No active session for {cluster_name}. Connect first.",
+            }
+        )
 
     cluster_session = cluster_info.get("session")
     if not cluster_session:
-        return json.dumps({"status": "error", "message": f"❌ No active session object found for {cluster_name}."})
-    
+        return json.dumps(
+            {
+                "status": "error",
+                "message": f"❌ No active session object found for {cluster_name}.",
+            }
+        )
+
     print("Inside fetch session: ", type(cluster_session))
     return cluster_session
 
 
 def get_cluster_status(cluster_name: str):
     """Fetches Ceph cluster status using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_cluster_status() for {cluster_name}")
     try:
         return ceph_ops.get_cluster_status(fetch_session_of_cluster(cluster_name))
 
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_cluster_health(cluster_name: str):
     """Fetches the health status of a Ceph cluster using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_cluster_health() for {cluster_name}")
     try:
         session = fetch_session_of_cluster(cluster_name)
@@ -176,11 +209,18 @@ def get_cluster_health(cluster_name: str):
         return ceph_ops.get_cluster_health(session)
 
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def osd_status(cluster_name: str):
     """Fetches the status of OSDs in a Ceph cluster using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_osds() for {cluster_name}", flush=True)
     try:
         output = ceph_ops.osd_status(fetch_session_of_cluster(cluster_name))
@@ -204,11 +244,11 @@ def osd_status(cluster_name: str):
             f"Host: {osd['host name']}, ID: {osd['id']}, Used: {osd['kb used']}, State: {', '.join(osd['state'])}"
             for osd in output["output"]["OSDs"]
         ]
-        
+
         # Join the formatted strings into a single response
         return {
             "message": f"📌 **List of Object Storage Daemons (OSDs) for {cluster_name} for multiple hostnames:**",
-            "OSD_Summary": "\n".join(formatted_osds)
+            "OSD_Summary": "\n".join(formatted_osds),
         }
         # for osd in output["output"]["OSDs"]:
         #     print(f"Host: {osd['host name']}, ID: {osd['id']}, Used: {osd['kb used']}, State: {', '.join(osd['state'])}")
@@ -216,18 +256,25 @@ def osd_status(cluster_name: str):
         # return f"📌 **List of Object Storage Deamons(OSDs) for {cluster_name} for multiple hostnames:** Here is the summary: \n\n{output['output']['OSDs']}\n"
 
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def list_filesystems(cluster_name: str):
     """Lists all CephFS filesystems using the cluster_name as parameter."""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered list_filesystems() for {cluster_name}")
     try:
         output = ceph_ops.list_filesystems(fetch_session_of_cluster(cluster_name))
 
         # Extract relevant information from the output
         if output and isinstance(output, dict):
-            fs_info = output.get('output', 'No filesystem info available')
+            fs_info = output.get("output", "No filesystem info available")
             # error_info = output.get('error', '')
 
             # Format the string nicely
@@ -240,93 +287,168 @@ def list_filesystems(cluster_name: str):
             #     result += "\n✅ Filesystem information retrieved successfully."
 
             return fs_info
-        
+
         return f"❌ No data returned from {cluster_name}."
-    
+
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_filesystem_metadata(cluster_name: str, fs_name: str):
     """Fetches metadata information for a Ceph filesystem using the cluster_name and file system name as a parameter from the user"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_filesystem_metadata() for {cluster_name}")
     try:
-        return ceph_ops.get_filesystem_metadata(fetch_session_of_cluster(cluster_name, fs_name))
+        return ceph_ops.get_filesystem_metadata(
+            fetch_session_of_cluster(cluster_name, fs_name)
+        )
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_filesystem_info(cluster_name: str, fs_name="cephfs"):
     """Fetches filesystem info using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_filesystem_info() for {cluster_name}")
     try:
-        return ceph_ops.get_filesystem_info(fetch_session_of_cluster(cluster_name), fs_name)
+        return ceph_ops.get_filesystem_info(
+            fetch_session_of_cluster(cluster_name), fs_name
+        )
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def list_mds_nodes(cluster_name: str):
     """Lists MDS nodes, state, pool availability and its usage for CephFS using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered list_mds_nodes() for {cluster_name}")
     try:
         return ceph_ops.list_mds_nodes(fetch_session_of_cluster(cluster_name))
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_mds_perf(cluster_name: str):
     """Gets MDS performance for CephFS using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_mds_perf() for {cluster_name}")
     try:
         return ceph_ops.get_mds_perf(fetch_session_of_cluster(cluster_name))
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def list_filesystem_clients(cluster_name: str):
     """Lists all active CephFS clients using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered list_filesystem_clients() for {cluster_name}")
     try:
         return ceph_ops.list_filesystem_clients(fetch_session_of_cluster(cluster_name))
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_active_mds(cluster_name: str):
     """Checks which MDS nodes are active and standby using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_active_mds() for {cluster_name}")
     try:
         return ceph_ops.get_active_mds(fetch_session_of_cluster(cluster_name))
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_filesystem_performance(cluster_name: str):
     """Fetches CephFS performance metrics using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_filesystem_performance() for {cluster_name}")
     try:
-        return ceph_ops.get_filesystem_performance(fetch_session_of_cluster(cluster_name))
+        return ceph_ops.get_filesystem_performance(
+            fetch_session_of_cluster(cluster_name)
+        )
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_mds_memory_usage(cluster_name: str):
     """Gets MDS memory usage for CephFS using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_mds_memory_usage() for {cluster_name}")
     try:
         return ceph_ops.get_mds_memory_usage(fetch_session_of_cluster(cluster_name))
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
 
 def get_cephfs_metadata_pool_usage(cluster_name: str, fs_name: str):
     """Gets CephFS metadata pool usage using the cluster_name as parameter"""
-    cluster_name = re.search(r'Cluster \d+', cluster_name).group() if re.search(r'Cluster \d+', cluster_name) else "Cluster 1"
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
     print(f"🚀 Entered get_cephfs_metadata_pool_usage() for {cluster_name}")
     try:
-        return ceph_ops.get_cephfs_metadata_pool_usage(fetch_session_of_cluster(cluster_name), fs_name)
+        return ceph_ops.get_cephfs_metadata_pool_usage(
+            fetch_session_of_cluster(cluster_name), fs_name
+        )
     except Exception as e:
-        return json.dumps({"status": "error", "message": f"❌ Failed to execute command: {str(e)}"})
-    
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
+# Use all the tools
+
 # Define AI Tools
 tools = [
     Tool(
@@ -336,40 +458,40 @@ tools = [
             "Fetch the current Ceph cluster status by providing 'cluster_name'. Ensure the response includes basic info about the cluster. Retrieve the info such as id, health, services such as mon, mgr, mds, osd, pools and volumes for both the Cluster 1 and Cluster 2. Retrieve the key metrics and show in structured format. Summarise with the data avaialble"
             # "Retrieve Key Metrics and Actionable Insights from the data."
         ),
-        force_execute=True
+        force_execute=True,
     ),
-
-    Tool(name="Get Cluster Health",
+    Tool(
+        name="Get Cluster Health",
         func=get_cluster_health,
-        description="Gets the health status of a Ceph cluster. Provide 'cluster_name'. Retrieve Key Metrics and Actionable Insights from the data"
+        description="Gets the health status of a Ceph cluster. Provide 'cluster_name'. Retrieve Key Metrics and Actionable Insights from the data",
     ),
-
-    Tool(name="Get OSD status",
+    Tool(
+        name="Get OSD status",
         func=osd_status,
         description="Retrieves status of OSDs in the Ceph cluster. Provide 'cluster_name'. Extract the relevant information from the output, such as the number of hosts and their respective statuses, kb used along with id. Update in table format with columns as 'Host', 'id', 'kb used', 'state' along with the individual entries.",
-        force_execute=True  # Always force execution of tool
+        force_execute=True,  # Always force execution of tool
     ),
-
-    Tool(name="List Filesystems",
+    Tool(
+        name="List Filesystems",
         func=list_filesystems,
         description="List all CephFS filesystems. Provide 'cluster_name'. Retrieves 'name', 'metadata pools', 'data pools'. You must always use the available tools to get fresh information. Do not assume previous results are still valid. If a tool exists to fetch data, always use it instead of relying on memory.",
         # return_direct=True
-        force_execute=True  # Always force execution of tools
+        force_execute=True,  # Always force execution of tools
     ),
-
-    Tool(name="Get Filesystem Metadata",
+    Tool(
+        name="Get Filesystem Metadata",
         func=get_filesystem_metadata,
-        description="Retrieve metadata information for a Ceph filesystem. Provide 'cluster_name' and 'fs_name'. The fs_name is identified from the query. If file system (fs) name is missing, ask the user to provide, or if you agent can fetch the file system name from previous command use one of the file system name. Extract the values of all and display in readbale format for the user"
+        description="Retrieve metadata information for a Ceph filesystem. Provide 'cluster_name' and 'fs_name'. The fs_name is identified from the query. If file system (fs) name is missing, ask the user to provide, or if you agent can fetch the file system name from previous command use one of the file system name. Extract the values of all and display in readbale format for the user",
     ),
-
-    Tool(name="Get Filesystem Info",
+    Tool(
+        name="Get Filesystem Info",
         func=get_filesystem_info,
-        description="Retrieve information about a Ceph filesystem. Provide 'cluster_name' and available 'fs name'"
+        description="Retrieve information about a Ceph filesystem. Provide 'cluster_name' and available 'fs name'",
     ),
-
-    Tool(name="List MDS Nodes",
+    Tool(
+        name="List MDS Nodes",
         func=list_mds_nodes,
-        description='''List all MDS nodes for CephFS. Provide 'cluster_name'. 
+        description="""List all MDS nodes for CephFS. Provide 'cluster_name'. 
         Analyze the following Ceph FS metadata and return a structured JSON output summarizing the key metrics:
 
         1. **MDS Nodes**:
@@ -383,45 +505,44 @@ tools = [
         - List each pool with details such as `name`, `type`, `available space`, and `used space`.
 
         4. **MDS Version Information**:
-        - Include the Ceph version and the associated daemon names.'''
-
+        - Include the Ceph version and the associated daemon names.""",
     ),
-
-    Tool(name="Get MDS Performance",
+    Tool(
+        name="Get MDS Performance",
         func=get_mds_perf,
-        description="Get performance details of CephFS MDS nodes. Provide 'cluster_name'"
+        description="Get performance details of CephFS MDS nodes. Provide 'cluster_name'",
     ),
-
-    Tool(name="List Filesystem Clients",
+    Tool(
+        name="List Filesystem Clients",
         func=list_filesystem_clients,
-        description="List all active CephFS clients. Provide 'cluster_name'"
+        description="List all active CephFS clients. Provide 'cluster_name'",
     ),
-
-    Tool(name="Get Active MDS",
+    Tool(
+        name="Get Active MDS",
         func=get_active_mds,
-        description="Check which MDS nodes are active and standby. Provide 'cluster_name'"
+        description="Check which MDS nodes are active and standby. Provide 'cluster_name'",
     ),
-
-    Tool(name="Get Filesystem Performance",
+    Tool(
+        name="Get Filesystem Performance",
         func=get_filesystem_performance,
-        description="Retrieve CephFS performance metrics. Provide 'cluster_name'"
+        description="Retrieve CephFS performance metrics. Provide 'cluster_name'",
     ),
-
-    Tool(name="Get MDS Memory Usage",
+    Tool(
+        name="Get MDS Memory Usage",
         func=get_mds_memory_usage,
-        description="Retrieve memory usage of MDS nodes. Provide 'cluster_name'"
+        description="Retrieve memory usage of MDS nodes. Provide 'cluster_name'",
     ),
-
-    Tool(name="Get CephFS Metadata Pool Usage",
+    Tool(
+        name="Get CephFS Metadata Pool Usage",
         func=get_cephfs_metadata_pool_usage,
-        description="Get metadata pool usage for a CephFS. Provide 'cluster_name' and available 'fs name'"
-    )
+        description="Get metadata pool usage for a CephFS. Provide 'cluster_name' and available 'fs name'",
+    ),
 ]
 
 # Memory for Chat History
 memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
 
-# agent_prompt = """You are a Ceph management assistant. Only answer questions related to Ceph cluster status, health, storage, and performance. 
+# agent_prompt = """You are a Ceph management assistant. Only answer questions related to Ceph cluster status, health, storage, and performance.
 # If a query is unrelated to Ceph, respond with: 'I can only assist with Ceph-related queries.'
 
 # - If the user asks to **connect** to a cluster (e.g., "Connect to Cluster 1" or "Establish connection to Cluster 1"), always use `Connect`.
@@ -497,8 +618,10 @@ Do NOT guess. Only respond using the correct tool.
 
 llm = Ollama(model="llama3.2")
 
+
 def query_llm(prompt: str):
     return llm.text_generation(prompt, max_new_tokens=1000)
+
 
 # # generate_params = {GenParams.MAX_NEW_TOKENS: 25}
 # model = Model(
@@ -532,7 +655,7 @@ agent = initialize_agent(
     do_sample=True,  # Set to True for sampling-based generation (as opposed to greedy)
 )
 
-    
+
 def process_query(query: str, cluster_data):
     """Processes user queries using the AI agent, ensuring active session is used."""
     try:
@@ -540,14 +663,13 @@ def process_query(query: str, cluster_data):
         if not cluster_data:
             return {"output": "⚠️ No active Ceph cluster. Please connect first."}
 
-        # # !!!!!!!! Note: Comment if loop when running via streamlit       
+        # # !!!!!!!! Note: Comment if loop when running via streamlit
         # if len(cluster_data) != 2:
         #     connect_cluster(cluster_name = "Cluster 1", cluster_ip = "10.0.67.46")
-        #     # connect_cluster(cluster_name = "Cluster 2", cluster_ip = "10.8.128.21")	
+        #     # connect_cluster(cluster_name = "Cluster 2", cluster_ip = "10.8.128.21")
         #     connect_cluster(cluster_name = "Cluster 2", cluster_ip = "10.0.64.37")
 
         print("DEBUG: Cluster Data =", cluster_data)  # Debugging
-
 
         cluster_list = get_target_clusters(query, cluster_data)
 
@@ -556,24 +678,21 @@ def process_query(query: str, cluster_data):
         else:
             print("❌ No active session found. Please reconnect.")
 
-
         if len(cluster_list) == 1:
             for cluster_name in cluster_list:
                 print("Inside process query: ", cluster_name)
-                agent_input = {
-                    "input": f"Cluster: {cluster_name}\nQuery: {query}"
-                }
+                agent_input = {"input": f"Cluster: {cluster_name}\nQuery: {query}"}
 
             response = agent.invoke(agent_input)
-            return response 
+            return response
         else:
             results = {}
-            clean_query = re.sub(r'\bCluster\s*\d+\b', '', query).strip()
+            clean_query = re.sub(r"\bCluster\s*\d+\b", "", query).strip()
             for cluster_name in cluster_list:
                 agent_input = {
                     "input": f"Cluster: {cluster_name}\nQuery: {clean_query}"
                 }
-                results[cluster_name] = agent.invoke(agent_input)['output']
+                results[cluster_name] = agent.invoke(agent_input)["output"]
             print("Results: ", results)
 
             summary_input = {
@@ -636,18 +755,18 @@ def process_query(query: str, cluster_data):
             else:
                 return agent.invoke(summary_input)
 
-
     except Exception as e:
         return f"⚠️ Error processing query: {str(e)}"
+
 
 # Extract cluster names from user input
 def extract_clusters_from_input(user_input, available_clusters):
     """Extracts cluster names mentioned in user input and validates against available clusters."""
     mentioned_clusters = []
-    
+
     # Match cluster patterns like "Cluster 1", "Cluster 2", etc.
-    matches = re.findall(r'Cluster\s*\d+', user_input, re.IGNORECASE)
-    
+    matches = re.findall(r"Cluster\s*\d+", user_input, re.IGNORECASE)
+
     # Normalize and validate clusters
     for match in matches:
         cluster_name = match.strip()  # Normalize formatting
@@ -655,6 +774,7 @@ def extract_clusters_from_input(user_input, available_clusters):
             mentioned_clusters.append(cluster_name)
 
     return mentioned_clusters
+
 
 # Determine which clusters to run the command on
 def get_target_clusters(user_input, cluster_data):

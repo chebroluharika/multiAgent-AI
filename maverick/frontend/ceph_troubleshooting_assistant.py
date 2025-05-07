@@ -60,6 +60,7 @@ def search_support_pages(label):
     result = upstream.fetch_ceph_issues(label)
     return result
 
+# Use these tools except search_bugzilla
 
 tools = [
     Tool(
