@@ -2,7 +2,7 @@ import json
 
 from crewai import Crew, Process, Task
 
-from agents import ObservabilityModel, ceph_management_agent, observability_agent
+from agents.agents import ObservabilityModel, ceph_management_agent, observability_agent
 from llm.llm_client import groq_llm_client
 from orchestrator.orchestrator import ceph_orchestrator
 

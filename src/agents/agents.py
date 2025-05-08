@@ -8,7 +8,7 @@ from pydantic import BaseModel
 from CephViz.agent import tools as ceph_tools
 from llm.llm_client import groq_llm_client, hf_llm_client
 from Observability.backend.agent import tools as observability_tools
-from tools import GetClusterHealthTool, GetDiskOccupationTool
+from tools.tools import GetClusterHealthTool, GetDiskOccupationTool
 
 load_dotenv()
 
