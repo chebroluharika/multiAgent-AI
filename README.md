@@ -8,3 +8,11 @@ Sync dependencies:
 ```bash
 uv sync
 ```
+
+
+## Running the code
+
+```bash
+cd src
+uv run orchestration/flow.py
+```

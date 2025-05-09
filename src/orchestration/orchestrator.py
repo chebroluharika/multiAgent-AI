@@ -7,25 +7,6 @@ from pydantic import BaseModel
 from llm.llm_client import gemini_llm_client
 from utils.agents import AgentsEnum
 
-CEPH_ORCHESTRATOR = Agent(
-    role="Ceph Orchestrator Manager",
-    goal="""Decompose user queries and delegate tasks to the appropriate Ceph agents. 
-    Available agents:
-    - Bug Intelligence Agent
-    - Ceph Viz Agent
-    - Observability Agent
-    User query: {topic}""",
-    verbose=True,
-    backstory="You are an expert in analyzing Ceph-related queries from users and delegate tasks to the specialized agents.",
-    # llm=groq_llm_client("groq/llama3-70b-8192"),
-    # llm=groq_llm_client("groq/llama-3.1-8b-instant"),
-    # llm=groq_llm_client(),
-    # llm=openai_llm_client(),
-    llm=gemini_llm_client(),
-    allow_delegation=True,
-    max_iter=1,
-)
-
 
 class OrchestratorPlan(BaseModel):
     chosen_agents: list[AgentsEnum] = []

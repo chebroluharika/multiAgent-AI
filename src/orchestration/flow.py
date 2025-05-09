@@ -1,9 +1,6 @@
-from datetime import datetime
-from pathlib import Path
 
 from crewai import Agent, Task
 from crewai.flow.flow import Flow, listen, start
-from crewai_tools import FileWriterTool
 from pydantic import BaseModel
 
 from llm.llm_client import gemini_llm_client
@@ -31,10 +28,7 @@ def client_outcome_architect(query: str, opinions: str) -> str:
         max_execution_time=30,
         verbose=True,
     )
-    output_dir = Path("outputs")
-    output_dir.mkdir(parents=True, exist_ok=True)
 
-    timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     task = Task(
         description="Generate user response from user query and "
         "expert opinions. The users are Ceph users. If expert opinions are technical and detailed enought you can use it to answer the user query. "
@@ -111,7 +105,7 @@ if __name__ == "__main__":
     print("Question:\n", question, end="\n\n")
     print("Final Answer:\n", result, end="\n\n")
     print(
-        f"Agents Used:\n",
+        "Agents Used:\n",
         "\n".join(map(lambda x: f"- {x.value}", flow.state.chosen_agents)),
         end="\n\n",
     )
