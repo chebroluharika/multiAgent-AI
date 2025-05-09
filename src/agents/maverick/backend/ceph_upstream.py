@@ -11,13 +11,11 @@ class Upstream:
             self.label = label
         # GitHub API endpoint for Ceph issues
         url = "https://api.github.com/repos/ceph/ceph/issues"
-        headers = {
-            "Accept": "application/vnd.github.v3+json"
-        }
+        headers = {"Accept": "application/vnd.github.v3+json"}
         params = {
             "state": self.state,  # "open", "closed", or "all"
             "per_page": "10",  # Number of issues to fetch
-            "labels": self.label  # Optional: Filter by labels (e.g., "bug", "enhancement")
+            "labels": self.label,  # Optional: Filter by labels (e.g., "bug", "enhancement")
         }
 
         # Send a GET request to the GitHub API
@@ -25,6 +23,9 @@ class Upstream:
         if response.status_code == 200:
             issues = response.json()
             print(issues)
+            if not issues:
+                return "No issues found for the label: " + self.label
+
             output_str = ""
             output_str += "Here are the top results from upstream!\n\n"
             for i, issue in enumerate(issues, start=1):
@@ -41,3 +42,6 @@ class Upstream:
             return []
 
 
+if __name__ == "__main__":
+    upstream = Upstream()
+    print(upstream.fetch_ceph_issues("performance"))

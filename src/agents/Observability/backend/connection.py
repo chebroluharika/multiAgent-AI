@@ -20,6 +20,8 @@ def get_db_string():
 # Connect to PostgreSQL
 def get_db_conn():
     db_string = get_db_string()
+    print(f"{db_string = }")
+
     try:
         conn = psycopg2.connect(db_string)
     except psycopg2.OperationalError as err:

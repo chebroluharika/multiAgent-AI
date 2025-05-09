@@ -10,11 +10,8 @@ from langchain.tools import Tool
 
 # Bugzilla API Base URL
 BUGZILLA_URL = "https://bugzilla.redhat.com"
-bzapi = bugzilla.Bugzilla(
-    BUGZILLA_URL, api_key="Mf5LWqGyfWxDEojhk1q5vTMpCc4ByfmvhOCIk8Hh"
-)
 
-
+# bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key="Mf5LWqGyfWxDEojhk1q5vTMpCc4ByfmvhOCIk8Hh")
 def serialize_bug_details(bug):
     """
     Serialize bug details, converting DateTime objects to strings.
@@ -38,74 +35,12 @@ def serialize_bug_details(bug):
     }
 
 
-def get_mock_bug_details(bug_id: int):
-    mock_bugs = [
-        {
-            "id": 12345,
-            "assigned_to": "mock_user@example.com",
-            "creator": "creator_user@example.com",
-            "product": "MockProduct",
-            "component": "MockComponent",
-            "status": "NEW",
-            "resolution": "",
-            "summary": "This is a mock bug for testing.",
-            "creation_time": "01/01/2023",
-            "last_change_time": "01/02/2023",
-            "comments": {
-                "comment_1": {
-                    "time": "01/01/2023",
-                    "creation_time": "01/01/2023",
-                    "creator": "commenter_user@example.com",
-                    "bug_comments": "This is a mock comment.",
-                    "comment_count": 1,
-                },
-                "comment_2": {
-                    "time": "01/03/2023",
-                    "creation_time": "01/03/2023",
-                    "creator": "another_user@example.com",
-                    "bug_comments": "This is another mock comment.",
-                    "comment_count": 2,
-                },
-            },
-        },
-        {
-            "id": 98765,
-            "assigned_to": "mock_user2@example.com",
-            "creator": "creator_user2@example.com",
-            "product": "MockProduct2",
-            "component": "MockComponent2",
-            "status": "IN_PROGRESS",
-            "resolution": "",
-            "summary": "This is another mock bug for testing.",
-            "creation_time": "02/01/2023",
-            "last_change_time": "02/02/2023",
-            "comments": {
-                "comment_1": {
-                    "time": "02/01/2023",
-                    "creation_time": "02/01/2023",
-                    "creator": "commenter_user2@example.com",
-                    "bug_comments": "This is a mock comment for the second bug.",
-                    "comment_count": 1,
-                }
-            },
-        },
-    ]
-    bug_report = list(filter(lambda bug: bug["id"] == bug_id, mock_bugs))
-    if len(bug_report) == 0:
-        return "No bug found"
-    return bug_report[0]
-
-
 def get_bug_details(bug_id):
     """
     Retrieve/returns bug details for a given bug ID.
     """
-    print(f"{bug_id = }")
-
     bug = bzapi.getbug(bug_id)
-    print(f"{bug = }")
     out = serialize_bug_details(bug)
-    # out = get_mock_bug_details(bug_id)
     return out
 
 
@@ -326,6 +261,11 @@ def get_all_bugs_details_fast(product_component):
     return all_bugs
 
 
+# print(get_all_bugs_details_fast("Red Hat Ceph Storage,RGW"))
+
+
+# Use only get_bug_details tool ignore everything else
+
 # Define tools
 tools = [
     Tool(
@@ -369,6 +309,24 @@ tools = [
     ),
 ]
 
+# Initialize the Ollama model
+# llm = OllamaLLM(model="mistral")
+
+# Memory for Conversation
+# memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+
+# Initialize the agent
+# agent = initialize_agent(
+#     llm=llm,
+#     tools=tools,
+#     agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
+#     memory=memory,
+#     verbose=True,
+#     handle_parsing_errors=True,
+# )
+
+# print("👋 Exiting agent...")
+
 
 def process_query(query: str):
     if not st.session_state.authenticated_user:
@@ -376,86 +334,3 @@ def process_query(query: str):
     response = agent.run(query)
     st.session_state.chat_history.append((query, response))
     return response
-
-
-if __name__ == "__main__":
-    from langchain_ollama import OllamaLLM
-
-    st.set_page_config(page_title="Bug Intelligence", page_icon="🐞", layout="centered")
-
-    if "authenticated_user" not in st.session_state:
-        st.session_state.authenticated_user = False
-    if "chat_history" not in st.session_state:
-        st.session_state.chat_history = []
-
-    if not st.session_state.authenticated_user:
-        st.sidebar.subheader("Bugzilla Login")
-        username = st.sidebar.text_input("👤 Username", placeholder="Enter username")
-        api_key = st.sidebar.text_input(
-            "🔑 Bugzilla API Key",
-            type="password",
-            placeholder="Enter your Bugzilla API Key",
-        )
-
-        if st.sidebar.button("Login"):
-            if api_key:
-                # Attempt login using API Key
-                bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key=api_key)
-
-                if bzapi.logged_in:
-                    st.session_state["bugzilla_token"] = api_key
-                    st.sidebar.success("Login successful!")
-                    st.sidebar.success(
-                        f"💬Hi {username} , I am Bug Intelligence (BI)! I am eager to help You!"
-                    )
-                    st.session_state.authenticated_user = True
-                else:
-                    st.sidebar.error("Login failed. Invalid API Key.")
-            else:
-                st.sidebar.warning("Please enter your API Key.")
-    if st.session_state.authenticated_user:
-        api_key = st.session_state["bugzilla_token"]
-        bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key=api_key)
-
-    # print(get_all_bugs_details_fast("Red Hat Ceph Storage,RGW"))
-
-    # Use only get_bug_details tool ignore everything else
-
-    # Initialize the Ollama model
-    llm = OllamaLLM(model="mistral")
-
-    # Memory for Conversation
-
-    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-
-    # Initialize the agent
-
-    agent = initialize_agent(
-        llm=llm,
-        tools=tools,
-        agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        memory=memory,
-        verbose=True,
-        handle_parsing_errors=True,
-    )
-
-    print("👋 Exiting agent...")
-
-    # Streamlit UI
-    st.title("💬BUG INTELLIGENCE: AI BUG Chatbot")
-
-    # Chat Interface
-
-    for query, response in st.session_state.chat_history:
-        st.write(f"🧑‍💻 You: {query}")
-        st.write(f"🤖 Bot: {response}")
-
-    prompt = st.chat_input("Type your command (e.g., get summary of bug)...")
-    if prompt:
-        if st.session_state.authenticated_user:
-            st.write(f"🧑‍💻 You: {prompt}")
-            with st.spinner("Processing... 🤖"):
-                response = process_query(prompt)
-                st.write(f"🤖 Bot: {response}")
-        else:
-            st.error("Please login")

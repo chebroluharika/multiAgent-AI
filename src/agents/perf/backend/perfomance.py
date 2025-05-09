@@ -1,10 +1,9 @@
 from copy import deepcopy
 
-from backend.config import ceph_configs
+from .config import ceph_configs
 
 
 class Performance:
-
     def load_config(self):
         """load ceph configs from backend.config"""
         return deepcopy(ceph_configs)

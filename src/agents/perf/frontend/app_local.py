@@ -5,7 +5,8 @@ from datetime import datetime
 
 import streamlit as st
 import yaml
-from streamlit_autorefresh import st_autorefresh
+
+# from streamlit_autorefresh import st_autorefresh
 
 sys.path.append("..")
 
@@ -15,63 +16,10 @@ from langchain.prompts import PromptTemplate
 from langchain.tools import Tool
 from langchain_community.llms import Ollama
 
-from backend.auth.auth import authenticate
-from backend.ceph_operations import Ceph
-from backend.config import USE_CASES
-from backend.perfomance import Performance
-
-# Set environment variables
-os.environ["LANGSMITH_TRACING"] = "true"
-
-global ceph_admin
-ceph_admin = None
-
-# Streamlit UI Configuration
-st.set_page_config(
-    page_title="🚀 Ceph Perf AI Agent Bot",
-    initial_sidebar_state="collapsed",
-    page_icon="🤖",
-    layout="wide",
-)
-
-# Apply styling
-st.markdown(
-    """
-    <style>
-        .column-container {
-            height: 100px;
-            border: 10px solid #ddd;
-            border-radius: 10px;
-            padding: 15px;
-            background-color: #f9f9f9;
-            margin: 5px;
-            box-shadow: 4px 2px 10px rgba(0,0,0,0.1);
-        }
-        .chat-container, .command-container {
-            height: 50px;
-            overflow-y: auto;
-            border: 2px solid #ddd;
-            padding: 15px;
-            background-color: white;
-            border-radius: 8px;
-        }
-        body {
-            overflow: hidden;
-        }
-    </style>
-    """,
-    unsafe_allow_html=True,
-)
-
-# Authentication state
-if "authenticated_user" not in st.session_state:
-    st.session_state.authenticated_user = None
-if "chat_history" not in st.session_state:
-    st.session_state.chat_history = []
-if "ceph_admin" not in st.session_state:
-    st.session_state.ceph_admin = None
-if "command_result" not in st.session_state:
-    st.session_state.command_result = None
+from ..backend.auth.auth import authenticate
+from ..backend.ceph_operations import Ceph
+from ..backend.config import USE_CASES
+from ..backend.perfomance import Performance
 
 
 def generate_summary(workload, performance_tunings):
@@ -82,9 +30,7 @@ def generate_summary(workload, performance_tunings):
     {performance_tuning_data}
 
     Please highlight workload and summarize the data in compact format and mention the profile settings that need changes, along with the corresponding commands as a solution.
-    """.replace(
-        "WORKLOAD", workload.lower()
-    )
+    """.replace("WORKLOAD", workload.lower())
 
     # Set up LangChain LLM with a prompt template
     llm = Ollama(model="llama3")
@@ -379,168 +325,184 @@ tools = [
     ),
 ]
 
-# Memory and LLM
-memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
-llm = Ollama(model="llama3")
+if __name__ == "__main__":
+    # Set environment variables
+    os.environ["LANGSMITH_TRACING"] = "true"
 
-# Initialize AI Agent
-agent = initialize_agent(
-    tools=tools,
-    llm=llm,
-    agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
-    memory=memory,
-    verbose=True,
-    handle_parsing_errors=True,
-)
+    global ceph_admin
+    ceph_admin = None
 
+    # Streamlit UI Configuration
+    st.set_page_config(
+        page_title="🚀 Ceph Perf AI Agent Bot",
+        initial_sidebar_state="collapsed",
+        page_icon="🤖",
+        layout="wide",
+    )
 
-def is_response_tabular(response):
-    """
-    Checks if the response contains structured data that can be tabulated.
-    """
-    try:
-        json_data = json.loads(response)
-        if "tabular_summary" in json_data:
-            return json_data
-    except Exception:
-        return False
+    # Apply styling
+    st.markdown(
+        """
+        <style>
+            .column-container {
+                height: 100px;
+                border: 10px solid #ddd;
+                border-radius: 10px;
+                padding: 15px;
+                background-color: #f9f9f9;
+                margin: 5px;
+                box-shadow: 4px 2px 10px rgba(0,0,0,0.1);
+            }
+            .chat-container, .command-container {
+                height: 50px;
+                overflow-y: auto;
+                border: 2px solid #ddd;
+                padding: 15px;
+                background-color: white;
+                border-radius: 8px;
+            }
+            body {
+                overflow: hidden;
+            }
+        </style>
+        """,
+        unsafe_allow_html=True,
+    )
 
+    # Authentication state
+    if "authenticated_user" not in st.session_state:
+        st.session_state.authenticated_user = None
+    if "chat_history" not in st.session_state:
+        st.session_state.chat_history = []
+    if "ceph_admin" not in st.session_state:
+        st.session_state.ceph_admin = None
+    if "command_result" not in st.session_state:
+        st.session_state.command_result = None
 
-def process_query(query: str):
-    """Process query using Agent.
+    # Memory and LLM
+    memory = ConversationBufferMemory(memory_key="chat_history", return_messages=True)
+    llm = Ollama(model="llama3")
 
-    Args:
-        query: User query
-    Returns:
-        response
-    """
+    # Initialize AI Agent
+    agent = initialize_agent(
+        tools=tools,
+        llm=llm,
+        agent=AgentType.CONVERSATIONAL_REACT_DESCRIPTION,
+        memory=memory,
+        verbose=True,
+        handle_parsing_errors=True,
+    )
+
+    def is_response_tabular(response):
+        """
+        Checks if the response contains structured data that can be tabulated.
+        """
+        try:
+            json_data = json.loads(response)
+            if "tabular_summary" in json_data:
+                return json_data
+        except Exception:
+            return False
+
+    def process_query(query: str):
+        """Process query using Agent.
+
+        Args:
+            query: User query
+        Returns:
+            response
+        """
+        if not st.session_state.authenticated_user:
+            return "⚠️ Please log in first."
+
+        with st.status(
+            "🤖 Processing your query... Please wait", expanded=True
+        ) as status:
+            timestamp = f"📅 {datetime.now().strftime('%A, %d %B %Y, %H:%M:%S')}"
+            response = agent.run(query)
+            st.session_state.chat_history.append((timestamp, query, response))
+            status.update(label="✅ Response Ready!", state="complete", expanded=False)
+
+        return response
+
+    # Login access
     if not st.session_state.authenticated_user:
-        return "⚠️ Please log in first."
+        st.markdown(
+            "<h1 style='text-align: center;'>🚀 Ceph Perf AI Agent</h1>",
+            unsafe_allow_html=True,
+        )
+        st.markdown(
+            "<h4 style='text-align: justify;'>🔑 Provide Ceph Admin Access</h4>",
+            unsafe_allow_html=True,
+        )
+        with st.form("login_form"):
+            host = st.text_input("Ceph Admin Host:", key="host IP address")
+            username = st.text_input("Username:", key="username")
+            password = st.text_input("Password:", type="password", key="password")
 
-    with st.status("🤖 Processing your query... Please wait", expanded=True) as status:
-        timestamp = f"📅 {datetime.now().strftime('%A, %d %B %Y, %H:%M:%S')}"
-        response = agent.run(query)
-        st.session_state.chat_history.append((timestamp, query, response))
-        status.update(label="✅ Response Ready!", state="complete", expanded=False)
+            submitted = st.form_submit_button("Login")
 
-    return response
+            if submitted:
+                auth_result = authenticate(host, username, password)
+                if isinstance(auth_result, tuple) and auth_result[0] is False:
+                    st.error(f"❌ {auth_result[1]}")
+                else:
+                    st.session_state.authenticated_user = {"username": username}
+                    st.session_state.ceph_admin = auth_result[1]
+                    st.success(
+                        f"✅ Logged in, {username}! Ceph Admin host: {st.session_state.ceph_admin.host}"
+                    )
+                    st.toast(f"Welcome {username}", icon="🎉")
+                    st.rerun()
 
+    # only if dashboard login is successfull
+    if st.session_state.authenticated_user:
+        st.markdown(
+            "<h1 style='text-align: center;'>🚀 Ceph Perf AI Agent</h1>",
+            unsafe_allow_html=True,
+        )
 
-# Login access
-if not st.session_state.authenticated_user:
-    st.markdown(
-        "<h1 style='text-align: center;'>🚀 Ceph Perf AI Agent</h1>",
-        unsafe_allow_html=True,
-    )
-    st.markdown(
-        "<h4 style='text-align: justify;'>🔑 Provide Ceph Admin Access</h4>",
-        unsafe_allow_html=True,
-    )
-    with st.form("login_form"):
-        host = st.text_input("Ceph Admin Host:", key="host IP address")
-        username = st.text_input("Username:", key="username")
-        password = st.text_input("Password:", type="password", key="password")
+        col1, col2 = st.columns([1.2, 2], vertical_alignment="center", border=True)
 
-        submitted = st.form_submit_button("Login")
+        # 📊 Live Ceph Dashboard (col1 - Refreshes Automatically)
+        with col1:
+            st.markdown("##### 📊 Live Ceph Dashboard")
 
-        if submitted:
-            auth_result = authenticate(host, username, password)
-            if isinstance(auth_result, tuple) and auth_result[0] is False:
-                st.error(f"❌ {auth_result[1]}")
-            else:
-                st.session_state.authenticated_user = {"username": username}
-                st.session_state.ceph_admin = auth_result[1]
-                st.success(
-                    f"✅ Logged in, {username}! Ceph Admin host: {st.session_state.ceph_admin.host}"
+            ceph_status_container = st.container(key="live-ceph")
+            live_services_container = st.container(key="live-services")
+
+            def update_dashboard():
+                ceph_status_json = ceph_ops.ceph_status(
+                    st.session_state.ceph_admin, json=True
                 )
-                st.toast(f"Welcome {username}", icon="🎉")
-                st.rerun()
+                ceph_status = parse_ceph_status(ceph_status_json)
 
-# only if dashboard login is successfull
-if st.session_state.authenticated_user:
-    st.markdown(
-        "<h1 style='text-align: center;'>🚀 Ceph Perf AI Agent</h1>",
-        unsafe_allow_html=True,
-    )
+                live_services_yaml = ceph_ops.get_live_services(
+                    st.session_state.ceph_admin
+                )
+                live_services = parse_live_services(live_services_yaml)
 
-    col1, col2 = st.columns([1.2, 2], vertical_alignment="center", border=True)
+                # Update tables inside containers without affecting the rest of the UI
+                with ceph_status_container:
+                    st.table(ceph_status)
 
-    # 📊 Live Ceph Dashboard (col1 - Refreshes Automatically)
-    with col1:
-        st.markdown("##### 📊 Live Ceph Dashboard")
+                with live_services_container:
+                    st.table(live_services)
 
-        ceph_status_container = st.container(key="live-ceph")
-        live_services_container = st.container(key="live-services")
+            update_dashboard()
 
-        def update_dashboard():
-            ceph_status_json = ceph_ops.ceph_status(
-                st.session_state.ceph_admin, json=True
-            )
-            ceph_status = parse_ceph_status(ceph_status_json)
+            # Auto-refresh only col1 (every 5 seconds)
+            st_autorefresh(interval=150000, key="Refresh-Live-Dashboard")
 
-            live_services_yaml = ceph_ops.get_live_services(st.session_state.ceph_admin)
-            live_services = parse_live_services(live_services_yaml)
+        # 💬 Ceph Chatbot (col2 - Static UI)
+        with col2:
+            st.markdown("##### 💬 Ceph Chatbot")
+            with st.container(height=510, border=True, key="chatbot"):
+                chat_display = st.container()  # Container to hold chat history
+                chat_display.empty()
 
-            # Update tables inside containers without affecting the rest of the UI
-            with ceph_status_container:
-                st.table(ceph_status)
-
-            with live_services_container:
-                st.table(live_services)
-
-        update_dashboard()
-
-        # Auto-refresh only col1 (every 5 seconds)
-        st_autorefresh(interval=150000, key="Refresh-Live-Dashboard")
-
-    # 💬 Ceph Chatbot (col2 - Static UI)
-    with col2:
-        st.markdown("##### 💬 Ceph Chatbot")
-        with st.container(height=510, border=True, key="chatbot"):
-            chat_display = st.container()  # Container to hold chat history
-            chat_display.empty()
-
-            # Display Chat History
-            with chat_display:
-                for _timestamp, _query, _response in st.session_state.chat_history:
-                    st.write(_timestamp)
-                    st.write(f"🧑‍💻 **You:** {_query}")
-
-                    tabular_response = is_response_tabular(_response)
-                    if tabular_response:
-                        # Stream large text responses
-                        st.write(f"🤖 **Bot:**  {tabular_response['general_summary']}")
-
-                        # Show Performance Tuning Table
-                        st.markdown("##### 📋 Performance Tuning Recommendations")
-                        st.table(tabular_response["tabular_summary"][1])
-                        st.write(tabular_response["tabular_summary"][0])
-                    else:
-                        st.markdown(f"🤖 **Bot:** {_response}")
-
-                    st.divider()
-            print(f"Number of history items: {len(st.session_state.chat_history)}")
-
-            # User Input for Chatbot
-            prompt = st.chat_input(
-                "Hey, Choose your workload for performance enhancements and tunings..."
-            )
-
-            # Suggested Quick Actions
-            for question in suggested_questions:
-                if st.button(question, key=f"btn_{question}"):
-                    prompt = question
-
-            # Process Query
-            if prompt:
-                process_query(prompt)
-
-                # Re-render chat history with updated messages
                 # Display Chat History
                 with chat_display:
-                    # Re-render chat history with updated messages
-                    chat_display.empty()
-
                     for _timestamp, _query, _response in st.session_state.chat_history:
                         st.write(_timestamp)
                         st.write(f"🧑‍💻 **You:** {_query}")
@@ -560,14 +522,61 @@ if st.session_state.authenticated_user:
                             st.markdown(f"🤖 **Bot:** {_response}")
 
                         st.divider()
+                print(f"Number of history items: {len(st.session_state.chat_history)}")
 
-        # 🖥️ Execute Live Ceph Command
-        with st.container(height=300, border=True):
-            st.markdown("##### 🖥️ Execute Live Ceph Command")
-            ceph_command = st.text_input("Enter a Ceph command >")
-            if st.button("Run Command", key="run_ceph_cmd") and ceph_command:
-                result = ceph_ops.execute_ceph_command(
-                    st.session_state.ceph_admin, ceph_command
+                # User Input for Chatbot
+                prompt = st.chat_input(
+                    "Hey, Choose your workload for performance enhancements and tunings..."
                 )
-                st.session_state.command_result = result
-                st.code(result, language="bash")
+
+                # Suggested Quick Actions
+                for question in suggested_questions:
+                    if st.button(question, key=f"btn_{question}"):
+                        prompt = question
+
+                # Process Query
+                if prompt:
+                    process_query(prompt)
+
+                    # Re-render chat history with updated messages
+                    # Display Chat History
+                    with chat_display:
+                        # Re-render chat history with updated messages
+                        chat_display.empty()
+
+                        for (
+                            _timestamp,
+                            _query,
+                            _response,
+                        ) in st.session_state.chat_history:
+                            st.write(_timestamp)
+                            st.write(f"🧑‍💻 **You:** {_query}")
+
+                            tabular_response = is_response_tabular(_response)
+                            if tabular_response:
+                                # Stream large text responses
+                                st.write(
+                                    f"🤖 **Bot:**  {tabular_response['general_summary']}"
+                                )
+
+                                # Show Performance Tuning Table
+                                st.markdown(
+                                    "##### 📋 Performance Tuning Recommendations"
+                                )
+                                st.table(tabular_response["tabular_summary"][1])
+                                st.write(tabular_response["tabular_summary"][0])
+                            else:
+                                st.markdown(f"🤖 **Bot:** {_response}")
+
+                            st.divider()
+
+            # 🖥️ Execute Live Ceph Command
+            with st.container(height=300, border=True):
+                st.markdown("##### 🖥️ Execute Live Ceph Command")
+                ceph_command = st.text_input("Enter a Ceph command >")
+                if st.button("Run Command", key="run_ceph_cmd") and ceph_command:
+                    result = ceph_ops.execute_ceph_command(
+                        st.session_state.ceph_admin, ceph_command
+                    )
+                    st.session_state.command_result = result
+                    st.code(result, language="bash")

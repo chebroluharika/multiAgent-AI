@@ -7,7 +7,7 @@ from connection import get_db_conn
 
 TABLE_PREFIX = "ceph_"
 TABLE_SUFFIX = "_metrics"
-LOCAL_SAMPLE_METRICS_FILE = "../../data/sample_metrics.txt"
+LOCAL_SAMPLE_METRICS_FILE = "../data/sample_metrics.txt"
 
 
 # Function to parse labels
@@ -60,7 +60,7 @@ def scrape_metrics(cluster_ip: str | None = None):
         response = requests.get(url)
         metrics_data = response.text.splitlines()
     else:
-        metrics_data = open("../../data/sample_metrics.txt", "r").read().splitlines()
+        metrics_data = open(LOCAL_SAMPLE_METRICS_FILE, "r").read().splitlines()
         metrics_data = [line for line in metrics_data if line.strip()]
 
     # Connect to PostgreSQL once

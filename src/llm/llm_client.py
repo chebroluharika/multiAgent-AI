@@ -31,6 +31,14 @@ def hf_llm_client(model: str = "huggingface/mistralai/Mistral-7B-Instruct-v0.3")
     )
 
 
+def gemini_llm_client(model: str = "gemini/gemini-2.0-flash-lite"):
+    assert model.startswith("gemini/"), "Model must start with 'gemini/'"
+    return LLM(
+        model=model,
+        api_key=os.getenv("GEMINI_API_KEY"),
+    )
+
+
 if __name__ == "__main__":
     print(os.getenv("OPENAI_API_KEY"))
     openai_llm = openai_llm_client("openai/gpt-4o-mini")

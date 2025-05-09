@@ -4,8 +4,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.tools import Tool
 from langchain_community.llms import Ollama
 
-from Observability.backend.connection import get_db_string
-
+from .connection import get_db_string
 from .metrics_operations import (
     check_degraded_pgs,
     check_recent_osd_crashes,

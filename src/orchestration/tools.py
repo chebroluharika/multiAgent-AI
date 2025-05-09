@@ -1,6 +1,6 @@
 from crewai.tools import tool
 
-from Observability.backend.metrics_operations import (
+from agents.Observability.backend.metrics_operations import (
     get_cluster_health,
     get_diskoccupation,
 )
@@ -12,7 +12,6 @@ def GetDiskOccupationTool(param_topic: str) -> str:
     print("Get Disk Occupation function called")
     result = get_diskoccupation(param_topic)
     return result
-
 
 
 @tool("GetClusterHealthTool")
