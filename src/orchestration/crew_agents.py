@@ -1,6 +1,5 @@
 from crewai import Agent
 from dotenv import load_dotenv
-from pydantic import BaseModel
 
 from agents.bugIntelligence.app import tools as bugintelligence_tools
 from agents.CephViz.agent import tools as ceph_tools
@@ -13,11 +12,6 @@ from llm.llm_client import gemini_llm_client
 from utils.agents import AgentBuilder, AgentFactory, AgentsEnum
 
 load_dotenv()
-
-
-class ObservabilityModel(BaseModel):
-    diskoccupation: str
-    nodename: str
 
 
 BUG_INTELLIGENCE_AGENT = Agent(
