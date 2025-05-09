@@ -1,0 +1,54 @@
+[project]
+name = "multiagent-ai"
+version = "0.1.0"
+description = "Add your description here"
+authors = [{ name = "Devarsh Patel", email = "pateldevarsh1206@gmail.com" }]
+readme = "README.md"
+requires-python = "==3.11"
+dependencies = [
+    "agno>=1.4.5",
+    "argparse>=1.4.0",
+    "bcrypt>=4.3.0",
+    "crewai>=0.118.0",
+    "crewai-tools>=0.43.0",
+    "faiss-cpu>=1.11.0",
+    "fitz>=0.0.1.dev2",
+    "huggingface-hub>=0.30.2",
+    "ibm-watson-machine-learning>=1.0.367",
+    "ipykernel>=6.29.5",
+    "langchain>=0.3.25",
+    "langchain-community>=0.3.23",
+    "langchain-huggingface>=0.1.2",
+    "ollama>=0.4.8",
+    "pandas==2.1.1",
+    "paramiko>=3.5.1",
+    "psycopg2-binary>=2.9.10",
+    "pymongo>=4.12.1",
+    "pymupdf>=1.25.5",
+    "python-bugzilla==3.3.0",
+    "python-dotenv>=1.1.0",
+    "requests>=2.32.3",
+    "ruff>=0.11.8",
+    "streamlit==1.42.0",
+    "tool>=0.8.0",
+    "tools>=1.0.2",
+]
+
+# [tool.ruff]
+# extend-exclude = ["src/agents/**/*.py"]
+
+[tool.ruff.lint]
+select = [
+    "E",   # pycodestyle (error)
+    "F",   # pyflakes
+    "B",   # bugbear
+    "B9",
+    "C4",  # flake8-comprehensions
+    "SIM", # flake8-simplify
+    "I",   # isort
+    "UP",  # pyupgrade
+    "PIE", # flake8-pie
+    "PGH", # pygrep-hooks
+    "PYI", # flake8-pyi
+    "RUF",
+]
