@@ -10,9 +10,16 @@ uv sync
 ```
 
 
-## Running the code
+## Running the backend
 
 ```bash
 cd src
 uv run orchestration/flow.py
+```
+
+# Running the frontend
+
+```bash
+cd src
+uv run frontend/app.py
 ```

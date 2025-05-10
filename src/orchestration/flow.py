@@ -1,6 +1,6 @@
-
 from crewai import Agent, Task
 from crewai.flow.flow import Flow, listen, start
+from crewai.flow.persistence import persist
 from pydantic import BaseModel
 
 from llm.llm_client import gemini_llm_client
@@ -9,11 +9,17 @@ from orchestration.orchestrator import ceph_orchestrator
 from utils.agents import AgentsEnum
 
 
+class Memory(BaseModel):
+    query: str = ""
+    response: str = ""
+
+
 class CephAgentsState(BaseModel):
     topic: str = ""
     chosen_agents: list[AgentsEnum] = []
     opinions: dict[AgentsEnum, str] = {}
     response: str = ""
+    memory: list[Memory] = []
 
 
 def client_outcome_architect(query: str, opinions: str) -> str:
@@ -79,6 +85,12 @@ class CephAgentsFlow(Flow[CephAgentsState]):
         client_response = client_outcome_architect(self.state.topic, opinions)
         self.state.response = client_response
         return client_response
+
+    @persist(verbose=True)
+    def save_memory(self):
+        self.state.memory.append(
+            Memory(query=self.state.topic, response=self.state.response)
+        )
 
 
 if __name__ == "__main__":
