@@ -2,7 +2,7 @@ import re
 from pathlib import Path
 
 import faiss
-import fitz  # PyMuPDF
+# import fitz  # PyMuPDF
 import numpy as np
 import requests
 from sentence_transformers import SentenceTransformer
@@ -37,15 +37,15 @@ class DocumentParse:
                 text = file.read()
         elif self.doc_path.endswith(".pdf"):
             text = ""
-            try:
-                doc = fitz.open(self.doc_path)
-                for page_num in range(len(doc)):
-                    page = doc.load_page(page_num)
-                    text += page.get_text(
-                        "text"
-                    )  # Use "text" mode for faster extraction
-            except Exception as e:
-                raise Exception(f"Failed to extract text from PDF: {e}")
+            # try:
+            #     doc = fitz.open(self.doc_path)
+            #     for page_num in range(len(doc)):
+            #         page = doc.load_page(page_num)
+            #         text += page.get_text(
+            #             "text"
+            #         )  # Use "text" mode for faster extraction
+            # except Exception as e:
+            #     raise Exception(f"Failed to extract text from PDF: {e}")
         else:
             raise ValueError(f"Unsupported file type: {self.doc_path}")
 
