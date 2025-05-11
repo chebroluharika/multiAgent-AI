@@ -6,6 +6,7 @@
 import json
 import os
 import sys
+from pathlib import Path
 
 from dotenv import load_dotenv
 from langchain.agents import AgentType, initialize_agent
@@ -29,7 +30,13 @@ BUGZILLA_API_KEY = os.getenv("BUGZILLA_API_KEY")
 DOCUMENTATION = os.getenv("DOCUMENTATION")
 
 
-document_parse = DocumentParse(DOCUMENTATION)
+document_parse = DocumentParse(
+    DOCUMENTATION,
+    folder_path=Path(DOCUMENTATION).parent,
+    index_name="ceph_documentation_index",
+)
+document_parse.load_faiss_index()
+
 kcs = CheckKcs()
 bugzilla = Bugzilla(BUGZILLA_URL, BUGZILLA_API_KEY)
 upstream = Upstream()
