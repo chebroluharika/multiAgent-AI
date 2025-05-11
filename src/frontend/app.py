@@ -40,7 +40,7 @@ chat_history = ChatHistory()
 
 
 # Streamlit page configuration
-st.set_page_config(page_title="Ceph Orchestrator Intelligence", page_icon="🤖", layout="wide")
+st.set_page_config(page_title="Observability AI Bot", page_icon="🤖", layout="wide")
 
 # Custom CSS for a more attractive UI
 st.markdown(
@@ -150,7 +150,7 @@ if st.session_state.cluster_data:
 
 # Display the main title
 st.markdown(
-    "<h1 style='text-align: center;'>🤖 Welcome to Ceph Intelligence Orchestrator!</h1>",
+    "<h1 style='text-align: center;'>🤖 Welcome to Observability bot!</h1>",
     unsafe_allow_html=True,
 )
 
