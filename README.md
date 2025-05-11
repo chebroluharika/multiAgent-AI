@@ -28,12 +28,25 @@ Python - 3.11
 ```bash
 uv sync
 ```
-
 3. Optional - if you want to use python 3.11.x when you have multiple python versions installed.
     ``` bash
     uv venv -p 3.11
     source .venv/bin/activate
     ```
+
+## Get the documentation
+
+```bash
+cd src/
+uv run scripts/scrape_ceph_documentation.py
+```
+
+## Create FAISS index
+
+```bash
+cd src/
+uv run agents/maverick/backend/parse_documentation.py
+```
 
 
 ## Running the backend

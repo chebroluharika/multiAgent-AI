@@ -174,3 +174,8 @@ cython_debug/
 .pypirc
 docs/
 *.ipynb
+*.faiss
+
+# GitHub downloaded files
+*.zip
+ceph-main
