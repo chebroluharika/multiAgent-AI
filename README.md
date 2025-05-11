@@ -34,7 +34,7 @@ uv sync
     source .venv/bin/activate
     ```
 
-## Get the documentation
+## Get the documentatio
 
 ```bash
 cd src/
@@ -60,5 +60,5 @@ uv run orchestration/flow.py
 
 ```bash
 cd src
-uv run frontend/app.py
+streamlit run frontend/app.py
 ```
