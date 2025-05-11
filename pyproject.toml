@@ -1,8 +1,8 @@
 [project]
 name = "multiagent-ai"
 version = "0.1.0"
-description = "Add your description here"
-authors = [{ name = "Devarsh Patel", email = "pateldevarsh1206@gmail.com" }]
+description = "MultiAgent Ceph Intelligence Orchestrator"
+authors = [{ name = "Chebrolu Harika", email = "chebroluharika@gmail.com" }]
 readme = "README.md"
 requires-python = "==3.11.*"
 dependencies = [

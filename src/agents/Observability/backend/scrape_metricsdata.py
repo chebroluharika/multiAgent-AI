@@ -3,7 +3,8 @@ import re
 
 import paramiko
 import requests
-from connection import get_db_conn
+
+from .connection import get_db_conn
 
 TABLE_PREFIX = "ceph_"
 TABLE_SUFFIX = "_metrics"
