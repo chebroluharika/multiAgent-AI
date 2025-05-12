@@ -60,7 +60,7 @@ st.markdown(
 # Display the main title
 st.markdown(
     """
-    <h1 style='text-align: center; color: #4CAF50; font-size: 36px;'>🤖 Observability AI Bot</h1>
+    <h1 style='text-align: center; color: #4CAF50; font-size: 36px;'>🤖 Ceph Observability Orchestrator</h1>
     <p style='text-align: center; font-size: 18px; color: gray;'>Monitor and manage your Ceph cluster effortlessly</p>
     <hr style='border: 1px solid #ccc;'>
 """,

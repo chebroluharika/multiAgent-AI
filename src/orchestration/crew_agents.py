@@ -20,7 +20,9 @@ BUG_INTELLIGENCE_AGENT = Agent(
     verbose=True,
     backstory=("Expert in understanding bug details from Bugzilla"),
     tools=AgentBuilder.create_tools(
-        tool_names=["get_bug_details"],
+        tool_names=["get_bug_details", 
+                    "get_all_bugs_details_fast"
+                    ],
         langchain_tools=bugintelligence_tools,
     ),  # type: ignore  # noqa: PGH003
     allow_delegation=False,

@@ -268,7 +268,7 @@ def get_all_bugs_action_by_email(data):
     return {"bug_id_list": reported + assigned}
 
 
-async def fetch_bugs_async(product, component, limit=100):
+def fetch_bugs_async(product, component, limit=100):
     def fetch_bugs(offset):
         query = bzapi.build_query(product, component)
         query["include_fields"] = [
@@ -289,7 +289,7 @@ async def fetch_bugs_async(product, component, limit=100):
     offset = 0
 
     while True:
-        bugs = await asyncio.to_thread(fetch_bugs, offset)
+        bugs = fetch_bugs(offset)
         if not bugs:
             break
 
@@ -319,10 +319,10 @@ async def fetch_bugs_async(product, component, limit=100):
     return all_bugs_details
 
 
-def get_all_bugs_details_fast(product_component):
-    product_component = product_component.split(",")
-    product, component = product_component[0], product_component[1]
-    all_bugs = asyncio.run(fetch_bugs_async(product, component))
+def get_all_bugs_details_fast(product):
+    # product_component = product_component.split(",")
+    # product, component = product_component[0], product_component[1]
+    all_bugs = fetch_bugs_async(product, "Red Hat Ceph Storage")
     return all_bugs
 
 
