@@ -34,7 +34,7 @@ uv sync
     source .venv/bin/activate
     ```
 
-## Get the documentation
+## Get the documentatio
 
 ```bash
 cd src/
