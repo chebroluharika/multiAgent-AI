@@ -22,12 +22,12 @@ def parse_labels(label_str):
     return labels
 
 
-def get_active_mgr_ip(cluster_ip):
+def get_active_mgr_ip(cluster_ip, ssh_username, ssh_password):
     try:
         # Establish SSH connection
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(cluster_ip, username="root", password="passwd")
+        ssh.connect(cluster_ip, username=ssh_username, password=ssh_password)
 
         # Run the Ceph command to get manager details
         stdin, stdout, stderr = ssh.exec_command("ceph mgr dump -f json")
@@ -54,9 +54,9 @@ def get_active_mgr_ip(cluster_ip):
 
 
 # Fetch Prometheus metrics
-def scrape_metrics(cluster_ip: str | None = None):
+def scrape_metrics(cluster_ip, ssh_username, ssh_password):
     if cluster_ip:
-        ip = get_active_mgr_ip(cluster_ip)
+        ip = get_active_mgr_ip(cluster_ip, ssh_username, ssh_password)
         url = f"http://{ip}:9283/metrics"
         response = requests.get(url)
         metrics_data = response.text.splitlines()

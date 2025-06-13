@@ -22,7 +22,7 @@ BUG_INTELLIGENCE_AGENT = Agent(
     tools=AgentBuilder.create_tools(
         tool_names=["get_bug_details", 
                     "get_all_bugs_details_fast",
-                    # "get_bug_details_based_on_keywords"
+                    "get_bug_details_based_on_keywords"
                     ],
         langchain_tools=bugintelligence_tools,
     ),  # type: ignore  # noqa: PGH003
@@ -97,7 +97,6 @@ PERFORMANCE_AGENT = Agent(
     ),
     tools=AgentBuilder.create_tools(
         tool_names=[
-            "get_ceph_status",
             "recommend_perf_tunables_low_latency_dbs",
             "recommend_perf_tunables_high_throughput",
             "recommend_perf_tunables_vm_storage",
