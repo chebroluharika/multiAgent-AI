@@ -2,7 +2,7 @@ from langchain.tools import Tool
 from langchain.memory import ConversationBufferMemory
 from langchain.agents import initialize_agent, AgentType
 from langchain_community.llms import Ollama
-from metrics_operations import check_degraded_pgs, check_recent_osd_crashes, get_ceph_daemon_counts, get_cluster_health, get_diskoccupation, get_high_latency_osds
+from src.agents.Observability.backend.metrics_operations import check_degraded_pgs, check_recent_osd_crashes, get_ceph_daemon_counts, get_cluster_health, get_diskoccupation, get_high_latency_osds
 from agno.storage.agent.postgres import PostgresAgentStorage
 from ibm_watson_machine_learning.foundation_models import Model
 from ibm_watson_machine_learning.metanames import GenTextParamsMetaNames as GenParams

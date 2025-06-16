@@ -14,7 +14,6 @@ from .metrics_operations import (
     get_high_latency_osds,
 )
 
-# Ignore get_cluster_health (this is for CephViz tool)
 # Define Tools
 tools = [
     Tool(

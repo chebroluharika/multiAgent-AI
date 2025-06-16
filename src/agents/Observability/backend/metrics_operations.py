@@ -6,7 +6,7 @@ from connection import get_db_conn
 
 
 # Tool Functions
-def get_diskoccupation(*args, **kwargs):
+def get_diskoccupation():
     print("get_diskoccupation function called")
     query_disk_occupation = """
         SELECT 
@@ -40,7 +40,7 @@ def get_diskoccupation(*args, **kwargs):
         conn.close()
 
 
-def check_degraded_pgs(*args, **kwargs):
+def check_degraded_pgs():
     # Query to check if any degraded PGs exist
     query = """
     SELECT 
@@ -70,7 +70,7 @@ def check_degraded_pgs(*args, **kwargs):
         conn.close()
 
 
-def check_recent_osd_crashes(*args, **kwargs):
+def check_recent_osd_crashes():
     # Query to check if any failed OSDs exist
     query = """
         WITH osd_status AS (
@@ -116,7 +116,7 @@ def check_recent_osd_crashes(*args, **kwargs):
         conn.close()
 
 
-def get_cluster_health(*args, **kwargs):
+def get_cluster_health():
     query = "SELECT MAX(value) FROM ceph_cephhealthstatus_metrics;"
 
     conn = get_db_conn()
@@ -155,7 +155,7 @@ def get_cluster_health(*args, **kwargs):
         conn.close()
 
 
-def get_high_latency_osds(*args, **kwargs):
+def get_high_latency_osds():
     query = """
     SELECT 
         labels->>'ceph_daemon' AS osd_id, 
@@ -234,13 +234,22 @@ def get_high_latency_osds(*args, **kwargs):
         conn.close()
 
 
-def get_ceph_daemon_counts(*args, **kwargs):
+def get_ceph_daemon_counts():
     query = """
-    SELECT 'MON' AS daemon_type, COUNT(*) AS count FROM ceph_cephmonmetadata_metrics
+    SELECT 'MON' AS daemon_type, COUNT(DISTINCT labels->>'ceph_daemon') AS count
+    FROM ceph_cephmonmetadata_metrics
+    WHERE value = 1.0
+
     UNION ALL
-    SELECT 'MGR' AS daemon_type, COUNT(*) AS count FROM ceph_cephmgrmetadata_metrics
+
+    SELECT 'MGR' AS daemon_type, COUNT(DISTINCT labels->>'hostname') AS count
+    FROM ceph_cephmgrmetadata_metrics
+    WHERE value = 1.0
     UNION ALL
-    SELECT 'OSD' AS daemon_type, COUNT(*) AS count FROM ceph_cephosdmetadata_metrics;
+
+    SELECT 'OSD' AS daemon_type, COUNT(DISTINCT labels->>'hostname') AS count
+    FROM ceph_cephosdmetadata_metrics
+    WHERE value = 1.0;
     """
 
     conn = get_db_conn()

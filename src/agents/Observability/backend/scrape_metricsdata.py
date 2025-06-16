@@ -1,3 +1,5 @@
+
+
 import json
 import re
 
@@ -22,15 +24,15 @@ def parse_labels(label_str):
     return labels
 
 
-def get_active_mgr_ip(cluster_ip):
+def get_active_mgr_ip(cluster_ip, ssh_username, ssh_password):
     try:
         # Establish SSH connection
         ssh = paramiko.SSHClient()
         ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-        ssh.connect(cluster_ip, username="root", password="passwd")
+        ssh.connect(cluster_ip, username=ssh_username, password=ssh_password)
 
         # Run the Ceph command to get manager details
-        stdin, stdout, stderr = ssh.exec_command("ceph mgr dump -f json")
+        stdin, stdout, stderr = ssh.exec_command("cephadm shell ceph mgr dump -f json")
         output = stdout.read().decode()
 
         # Close SSH connection
@@ -40,6 +42,7 @@ def get_active_mgr_ip(cluster_ip):
         mgr_data = json.loads(output)
 
         # Extract active manager name
+        
         active_addr = mgr_data.get("active_addr", None)
         if not active_addr:
             print("No active mgr found")
@@ -54,9 +57,9 @@ def get_active_mgr_ip(cluster_ip):
 
 
 # Fetch Prometheus metrics
-def scrape_metrics(cluster_ip: str | None = None):
+def scrape_metrics(cluster_ip, ssh_username, ssh_password):
     if cluster_ip:
-        ip = get_active_mgr_ip(cluster_ip)
+        ip = get_active_mgr_ip(cluster_ip, ssh_username, ssh_password)
         url = f"http://{ip}:9283/metrics"
         response = requests.get(url)
         metrics_data = response.text.splitlines()
@@ -71,7 +74,10 @@ def scrape_metrics(cluster_ip: str | None = None):
         exit()
 
     # Parse metrics and process each line
-    for line in metrics_data:
+    cleaned_list = [line for line in metrics_data if line.strip()]
+    metrics_by_table = {}
+    for line in cleaned_list:
+    
         if line.startswith("#"):  # Skip comment lines
             continue
 
@@ -80,9 +86,8 @@ def scrape_metrics(cluster_ip: str | None = None):
 
         print("=================================")
         print(line)
-        metric_parts = line.rsplit(
-            " ", 1
-        )  # Split only on the last space to separate the value
+        metric_parts = line.rsplit(" ", 1)  # Split only on the last space to separate the value
+
         metric_name_and_labels = metric_parts[0]
         metric_value_str = metric_parts[1]
 
@@ -107,11 +112,13 @@ def scrape_metrics(cluster_ip: str | None = None):
             continue
 
         # Create table name dynamically from metric name
-        table_name = f"{metric_name.lower().replace('_', '')}"  # e.g., ceph_mon_quorum_status_metrics
+        table_name = f"{metric_name.lower().replace('_', '').replace(':', '')}"  # e.g., ceph_mon_quorum_status_metrics
         table_name = f"{TABLE_PREFIX}{table_name}{TABLE_SUFFIX}"
-
+        
+        metrics_by_table.setdefault(table_name, []).append((metric_name, json.dumps(metric_labels), metric_value))   
+    
+    for table_name, rows in metrics_by_table.items():
         cur = conn.cursor()
-
         delete_table_query = f"DROP TABLE IF EXISTS {table_name}"
         cur.execute(delete_table_query)
 
@@ -124,32 +131,31 @@ def scrape_metrics(cluster_ip: str | None = None):
             timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP
         );
         """
+        
+        # Create the table if it doesn't exist
+        cur.execute(create_table_query)
+        
+        conn.commit() # Commit the table creation
 
-        # Prepare labels as JSONB
-        labels_json = json.dumps(metric_labels)
-
-        cur = conn.cursor()
         try:
-            # Create the table if it doesn't exist
-            cur.execute(create_table_query)
-            conn.commit()  # Commit the table creation
+            for row in rows:
 
-            # Execute insert query
-            insert_query = f"INSERT INTO {table_name} (metric_name, labels, value) VALUES (%s, %s, %s)"
-            cur.execute(insert_query, (metric_name, labels_json, metric_value))
-            conn.commit()
-            print(
-                f"Inserted {metric_name} with labels {labels_json} and value {metric_value} into {table_name}"
-            )
+                # Execute insert query
+                cur.execute(
+                    f"INSERT INTO {table_name} (metric_name, labels, value) VALUES (%s, %s, %s)",
+                    row
+                )
+                conn.commit()
+                
+                print(
+                    f"Inserted {metric_name} with labels {json.dumps(metric_labels)} and value {metric_value} into {table_name}"
+                )
 
         except Exception as err:
             print(f"Database error: {err}")
             conn.rollback()
         finally:
             cur.close()
-
-    # Close the connection
-    conn.close()
 
 
 if __name__ == "__main__":
