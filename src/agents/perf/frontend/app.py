@@ -99,6 +99,9 @@ perf_ops = Performance()
 
 def get_ceph_status(ceph_admin):
     """fetches ceph cluster status of running cluster."""
+    # if not st.session_state.authenticated_user:
+    #     return "⚠️ Please log in first."
+    # status = ceph_ops.ceph_status(st.session_state.ceph_admin)
     status = ceph_ops.ceph_status(ceph_admin)
     return status if status else "Failed to retrieve Ceph status."
 
@@ -285,12 +288,12 @@ suggested_questions = [
 
 # Define Tools
 tools = [
-    # Tool(
-    #     name="Ceph Status",
-    #     func=get_ceph_status,
-    #     description="Live Ceph-status.",
-    #     return_direct=True,
-    # ),
+    Tool(
+        name="Ceph Status",
+        func=get_ceph_status,
+        description="Live Ceph-status.",
+        return_direct=True,
+    ),
     Tool(
         name="Get performance recommendations for low latency databases",
         func=recommend_perf_tunables_low_latency_dbs,

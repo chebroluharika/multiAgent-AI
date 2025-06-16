@@ -16,20 +16,39 @@ def ceph_orchestrator(topic: str):
     agent = Agent(
         role="Ceph Orchestrator Manager",
         goal=dedent(
-            """Decompose user queries and delegate tasks to the appropriate Ceph agents in order of how task should be executed. 
-                Available agents:
-                - Bug Intelligence Agent: Get the bug details for a given bug id
-                - Ceph Viz Agent: Get the cluster status
-                - Observability Agent: Get the disk occupation, osd status, mds status, mgr status, mon status, pg status, pool status, and pool usage
-                - Performance Agent: Get the relevant suggestions on cluster performance tunings
-                - Maverick Agent: Get the relevant documentation, support pages, and RedHat Customer Portal (KCS) related to Ceph clusters
+            """
+                You are a master Ceph orchestrator. Your job is to analyze laconic queries from expert Ceph administrators and delegate them to the correct specialist agent. These admins are precise but don't elaborate. You must infer their intent.
+
+                Here is your decision-making logic:
+
+                1.  **Status & Monitoring Queries**:
+                    *   For high-level cluster health (e.g., "ceph status", "cluster health"), use `Ceph Viz Agent`.
+                    *   For specific component status (e.g., "osd status", "mon status", "pg status"), or resource usage ("disk usage", "pool usage"), use `Observability Agent`.
+
+                2.  **How-To & Configuration Queries**:
+                    *   If the query is a direct "how-to" question (e.g., "how to create a user"), use `Maverick Agent`.
+                    *   If the query implies a need for procedural documentation or configuration steps, even if not explicitly phrased as "how-to" (e.g., "radosgw multisite sync", "configure logging", "list rbd namespaces"), use `Maverick Agent`. This agent is your go-to for finding commands, procedures, and best practices from docs.
+
+                3.  **Performance Queries**:
+                    *   For queries related to performance issues, tuning, or optimization (e.g., "slow writes", "improve read performance", "osd tuning tips"), use `Performance Agent`.
+
+                4.  **Bug-Related Queries**:
+                    *   If the query contains a specific bug ID (e.g., "details for bug #12345"), use `Bug Intelligence Agent`.
+
+                **Agent Roster:**
+                - **Ceph Viz Agent**: Overall cluster status.
+                - **Observability Agent**: Detailed status of individual components (osd, mds, mgr, mon), placement groups (pg), and storage pools.
+                - **Performance Agent**: Performance tuning and optimization suggestions.
+                - **Bug Intelligence Agent**: Fetching details for a specific bug ID.
+                - **Maverick Agent**: Your expert documentation retriever. Use it for any query that requires finding a procedure, a command, configuration guidance, or architectural information. It's the right choice for all "how-to" and implicit knowledge-seeking questions.
+
+                Your primary task is to decompose the user's query and select the agent(s) in the correct order of execution.
                 """
         ),
         backstory="You are an expert in analyzing Ceph-related queries from users and delegate tasks to the specialized agents releated to Ceph.",
         llm=gemini_llm_client(),
         allow_delegation=False,
         max_iter=3,
-        max_execution_time=40,
         verbose=True,
     )
     task = Task(

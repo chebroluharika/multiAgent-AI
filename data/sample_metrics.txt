@@ -1,0 +1,653 @@
+# HELP ceph_health_status Cluster health status
+# TYPE ceph_health_status untyped
+ceph_health_status 1.0
+# HELP ceph_mon_quorum_status Monitors in quorum
+# TYPE ceph_mon_quorum_status gauge
+ceph_mon_quorum_status{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer"} 1.0
+ceph_mon_quorum_status{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+ceph_mon_quorum_status{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+# HELP ceph_fs_metadata FS Metadata
+# TYPE ceph_fs_metadata untyped
+# HELP ceph_mds_metadata MDS Metadata
+# TYPE ceph_mds_metadata untyped
+# HELP ceph_mon_metadata MON Metadata
+# TYPE ceph_mon_metadata untyped
+ceph_mon_metadata{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer",public_addr="10.0.67.245",rank="0",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_mon_metadata{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node2",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",public_addr="10.0.64.123",rank="1",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_mon_metadata{ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node3",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",public_addr="10.0.66.170",rank="2",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+# HELP ceph_mgr_metadata MGR metadata
+# TYPE ceph_mgr_metadata gauge
+ceph_mgr_metadata{ceph_daemon="mgr.ceph-hchebrol-upstrm-8-1-lq3uuw-node2.ctsltb",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_mgr_metadata{ceph_daemon="mgr.ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer.lclnut",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+# HELP ceph_mgr_status MGR status (0=standby, 1=active)
+# TYPE ceph_mgr_status gauge
+ceph_mgr_status{ceph_daemon="mgr.ceph-hchebrol-upstrm-8-1-lq3uuw-node2.ctsltb"} 0.0
+ceph_mgr_status{ceph_daemon="mgr.ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer.lclnut"} 1.0
+# HELP ceph_mgr_module_status MGR module status (0=disabled, 1=enabled, 2=auto-enabled)
+# TYPE ceph_mgr_module_status gauge
+ceph_mgr_module_status{name="alerts"} 0.0
+ceph_mgr_module_status{name="balancer"} 2.0
+ceph_mgr_module_status{name="call_home_agent"} 0.0
+ceph_mgr_module_status{name="cephadm"} 1.0
+ceph_mgr_module_status{name="crash"} 2.0
+ceph_mgr_module_status{name="dashboard"} 1.0
+ceph_mgr_module_status{name="devicehealth"} 2.0
+ceph_mgr_module_status{name="diskprediction_local"} 0.0
+ceph_mgr_module_status{name="influx"} 0.0
+ceph_mgr_module_status{name="insights"} 0.0
+ceph_mgr_module_status{name="iostat"} 1.0
+ceph_mgr_module_status{name="k8sevents"} 0.0
+ceph_mgr_module_status{name="localpool"} 0.0
+ceph_mgr_module_status{name="mds_autoscaler"} 0.0
+ceph_mgr_module_status{name="mirroring"} 0.0
+ceph_mgr_module_status{name="nfs"} 1.0
+ceph_mgr_module_status{name="orchestrator"} 2.0
+ceph_mgr_module_status{name="osd_perf_query"} 0.0
+ceph_mgr_module_status{name="osd_support"} 0.0
+ceph_mgr_module_status{name="pg_autoscaler"} 2.0
+ceph_mgr_module_status{name="progress"} 2.0
+ceph_mgr_module_status{name="prometheus"} 1.0
+ceph_mgr_module_status{name="rbd_support"} 2.0
+ceph_mgr_module_status{name="restful"} 0.0
+ceph_mgr_module_status{name="rgw"} 0.0
+ceph_mgr_module_status{name="rook"} 0.0
+ceph_mgr_module_status{name="selftest"} 0.0
+ceph_mgr_module_status{name="smb"} 1.0
+ceph_mgr_module_status{name="snap_schedule"} 0.0
+ceph_mgr_module_status{name="stats"} 0.0
+ceph_mgr_module_status{name="status"} 2.0
+ceph_mgr_module_status{name="telegraf"} 0.0
+ceph_mgr_module_status{name="telemetry"} 2.0
+ceph_mgr_module_status{name="test_orchestrator"} 0.0
+ceph_mgr_module_status{name="volumes"} 2.0
+ceph_mgr_module_status{name="zabbix"} 0.0
+# HELP ceph_mgr_module_can_run MGR module runnable state i.e. can it run (0=no, 1=yes)
+# TYPE ceph_mgr_module_can_run gauge
+ceph_mgr_module_can_run{name="alerts"} 1.0
+ceph_mgr_module_can_run{name="balancer"} 1.0
+ceph_mgr_module_can_run{name="call_home_agent"} 1.0
+ceph_mgr_module_can_run{name="cephadm"} 1.0
+ceph_mgr_module_can_run{name="crash"} 1.0
+ceph_mgr_module_can_run{name="dashboard"} 1.0
+ceph_mgr_module_can_run{name="devicehealth"} 1.0
+ceph_mgr_module_can_run{name="diskprediction_local"} 1.0
+ceph_mgr_module_can_run{name="influx"} 0.0
+ceph_mgr_module_can_run{name="insights"} 1.0
+ceph_mgr_module_can_run{name="iostat"} 1.0
+ceph_mgr_module_can_run{name="k8sevents"} 1.0
+ceph_mgr_module_can_run{name="localpool"} 1.0
+ceph_mgr_module_can_run{name="mds_autoscaler"} 1.0
+ceph_mgr_module_can_run{name="mirroring"} 1.0
+ceph_mgr_module_can_run{name="nfs"} 1.0
+ceph_mgr_module_can_run{name="orchestrator"} 1.0
+ceph_mgr_module_can_run{name="osd_perf_query"} 1.0
+ceph_mgr_module_can_run{name="osd_support"} 1.0
+ceph_mgr_module_can_run{name="pg_autoscaler"} 1.0
+ceph_mgr_module_can_run{name="progress"} 1.0
+ceph_mgr_module_can_run{name="prometheus"} 1.0
+ceph_mgr_module_can_run{name="rbd_support"} 1.0
+ceph_mgr_module_can_run{name="restful"} 1.0
+ceph_mgr_module_can_run{name="rgw"} 1.0
+ceph_mgr_module_can_run{name="rook"} 1.0
+ceph_mgr_module_can_run{name="selftest"} 1.0
+ceph_mgr_module_can_run{name="smb"} 1.0
+ceph_mgr_module_can_run{name="snap_schedule"} 1.0
+ceph_mgr_module_can_run{name="stats"} 1.0
+ceph_mgr_module_can_run{name="status"} 1.0
+ceph_mgr_module_can_run{name="telegraf"} 1.0
+ceph_mgr_module_can_run{name="telemetry"} 1.0
+ceph_mgr_module_can_run{name="test_orchestrator"} 1.0
+ceph_mgr_module_can_run{name="volumes"} 1.0
+ceph_mgr_module_can_run{name="zabbix"} 1.0
+# HELP ceph_osd_metadata OSD Metadata
+# TYPE ceph_osd_metadata untyped
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.0",cluster_addr="10.0.66.190",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",objectstore="bluestore",public_addr="10.0.66.190",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.1",cluster_addr="10.0.67.28",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",objectstore="bluestore",public_addr="10.0.67.28",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.2",cluster_addr="10.0.66.170",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",objectstore="bluestore",public_addr="10.0.66.170",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.3",cluster_addr="10.0.64.123",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",objectstore="bluestore",public_addr="10.0.64.123",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.4",cluster_addr="10.0.66.190",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",objectstore="bluestore",public_addr="10.0.66.190",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.5",cluster_addr="10.0.67.28",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",objectstore="bluestore",public_addr="10.0.67.28",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.6",cluster_addr="10.0.66.170",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",objectstore="bluestore",public_addr="10.0.66.170",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.7",cluster_addr="10.0.64.123",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",objectstore="bluestore",public_addr="10.0.64.123",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.8",cluster_addr="10.0.66.190",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",objectstore="bluestore",public_addr="10.0.66.190",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.9",cluster_addr="10.0.67.28",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",objectstore="bluestore",public_addr="10.0.67.28",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.10",cluster_addr="10.0.66.170",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",objectstore="bluestore",public_addr="10.0.66.170",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.11",cluster_addr="10.0.64.123",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",objectstore="bluestore",public_addr="10.0.64.123",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.12",cluster_addr="10.0.66.190",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",objectstore="bluestore",public_addr="10.0.66.190",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.13",cluster_addr="10.0.67.28",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",objectstore="bluestore",public_addr="10.0.67.28",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.14",cluster_addr="10.0.67.28",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",objectstore="bluestore",public_addr="10.0.67.28",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.15",cluster_addr="10.0.66.170",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",objectstore="bluestore",public_addr="10.0.66.170",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.16",cluster_addr="10.0.66.190",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",objectstore="bluestore",public_addr="10.0.66.190",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.17",cluster_addr="10.0.64.123",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",objectstore="bluestore",public_addr="10.0.64.123",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.18",cluster_addr="10.0.66.170",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",objectstore="bluestore",public_addr="10.0.66.170",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+ceph_osd_metadata{back_iface="",ceph_daemon="osd.19",cluster_addr="10.0.64.123",device_class="hdd",front_iface="",hostname="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",objectstore="bluestore",public_addr="10.0.64.123",ceph_version="ceph version 19.2.1-167.el9cp (3e3ca3a16912abfd58b473e2ae724703f9a0415d) squid (stable)"} 1.0
+# HELP ceph_disk_occupation Associate Ceph daemon with disk used
+# TYPE ceph_disk_occupation untyped
+ceph_disk_occupation{ceph_daemon="osd.0",device="/dev/dm-0",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",devices="vdb",device_ids="vdb=bb783f0e-ecfd-48fe-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.1",device="/dev/dm-0",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",devices="vdb",device_ids="vdb=2074e104-66b7-4ed6-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.2",device="/dev/dm-0",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",devices="vdb",device_ids="vdb=af6605cb-f39e-41bd-a"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.3",device="/dev/dm-0",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",devices="vdb",device_ids="vdb=28880c02-89b9-4685-9"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.4",device="/dev/dm-1",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",devices="vdc",device_ids="vdc=f9269a9a-5f28-4c3c-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.5",device="/dev/dm-1",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",devices="vdc",device_ids="vdc=ded75bc3-0dfb-485a-a"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.6",device="/dev/dm-1",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",devices="vdc",device_ids="vdc=aa968abc-faa5-4ae1-a"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.7",device="/dev/dm-1",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",devices="vdc",device_ids="vdc=acee214b-a281-46b5-a"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.8",device="/dev/dm-2",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",devices="vdd",device_ids="vdd=0964a0d2-cf73-4412-a"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.9",device="/dev/dm-2",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",devices="vdd",device_ids="vdd=932cba6b-438a-421a-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.10",device="/dev/dm-2",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",devices="vdd",device_ids="vdd=7bf3d50b-a150-4db8-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.11",device="/dev/dm-2",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",devices="vdd",device_ids="vdd=35e62eeb-7b83-42af-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.12",device="/dev/dm-3",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",devices="vde",device_ids="vde=48029dc1-bde1-4ae9-9"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.13",device="/dev/dm-3",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",devices="vde",device_ids="vde=eed54508-563c-4c4a-8"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.14",device="/dev/dm-4",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4",devices="vdf",device_ids="vdf=c61f2049-715a-43ef-8"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.15",device="/dev/dm-3",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",devices="vde",device_ids="vde=5f07c959-bf0d-4078-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.16",device="/dev/dm-4",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5",devices="vdf",device_ids="vdf=57c49596-82a1-4f96-8"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.17",device="/dev/dm-3",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",devices="vde",device_ids="vde=ef38f305-4a02-424e-b"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.18",device="/dev/dm-4",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3",devices="vdf",device_ids="vdf=bbe314d4-02f3-4527-9"} 1.0
+ceph_disk_occupation{ceph_daemon="osd.19",device="/dev/dm-4",db_device="",wal_device="",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2",devices="vdf",device_ids="vdf=62f58aa2-ca1b-43a7-a"} 1.0
+# HELP ceph_disk_occupation_human Associate Ceph daemon with disk used
+# TYPE ceph_disk_occupation_human untyped
+ceph_disk_occupation_human{ceph_daemon="osd.0",device="/dev/dm-0",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.1",device="/dev/dm-0",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.2",device="/dev/dm-0",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.3",device="/dev/dm-0",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.4",device="/dev/dm-1",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.5",device="/dev/dm-1",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.6",device="/dev/dm-1",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.7",device="/dev/dm-1",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.8",device="/dev/dm-2",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.9",device="/dev/dm-2",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.10",device="/dev/dm-2",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.11",device="/dev/dm-2",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.12",device="/dev/dm-3",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.13",device="/dev/dm-3",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.14",device="/dev/dm-4",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node4"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.15",device="/dev/dm-3",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.16",device="/dev/dm-4",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node5"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.17",device="/dev/dm-3",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.18",device="/dev/dm-4",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 1.0
+ceph_disk_occupation_human{ceph_daemon="osd.19",device="/dev/dm-4",instance="ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 1.0
+# HELP ceph_pool_metadata POOL Metadata
+# TYPE ceph_pool_metadata untyped
+ceph_pool_metadata{pool_id="1",name=".smb",type="replicated",description="replica:3",compression_mode="none"} 1.0
+ceph_pool_metadata{pool_id="2",name=".mgr",type="replicated",description="replica:3",compression_mode="none"} 1.0
+# HELP ceph_rgw_metadata RGW Metadata
+# TYPE ceph_rgw_metadata untyped
+# HELP ceph_rbd_mirror_metadata RBD Mirror Metadata
+# TYPE ceph_rbd_mirror_metadata untyped
+# HELP ceph_pg_total PG Total Count per Pool
+# TYPE ceph_pg_total gauge
+ceph_pg_total{pool_id="1"} 32.0
+ceph_pg_total{pool_id="2"} 1.0
+# HELP ceph_health_detail healthcheck status by type (0=inactive, 1=active)
+# TYPE ceph_health_detail gauge
+ceph_health_detail{name="CEPHADM_DAEMON_PLACE_FAIL",severity="HEALTH_WARN"} 0.0
+ceph_health_detail{name="TOO_FEW_OSDS",severity="HEALTH_WARN"} 0.0
+ceph_health_detail{name="CEPHADM_FAILED_DAEMON",severity="HEALTH_WARN"} 1.0
+ceph_health_detail{name="PG_AVAILABILITY",severity="HEALTH_WARN"} 0.0
+ceph_health_detail{name="CEPHADM_REFRESH_FAILED",severity="HEALTH_WARN"} 0.0
+# HELP ceph_pool_objects_repaired Number of objects repaired in a pool
+# TYPE ceph_pool_objects_repaired counter
+ceph_pool_objects_repaired{pool_id="2"} 0.0
+ceph_pool_objects_repaired{pool_id="1"} 0.0
+# HELP ceph_daemon_health_metrics Health metrics for Ceph daemons
+# TYPE ceph_daemon_health_metrics gauge
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node1-installer"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node2"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.11"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.11"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.17"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.17"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.19"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.19"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.3"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.3"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.7"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.7"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="mon.ceph-hchebrol-upstrm-8-1-lq3uuw-node3"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.10"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.10"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.15"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.15"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.18"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.18"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.2"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.2"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.6"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.6"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.1"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.1"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.13"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.13"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.14"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.14"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.5"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.5"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.9"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.9"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.0"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.0"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.12"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.12"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.16"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.16"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.4"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.4"} 0.0
+ceph_daemon_health_metrics{type="SLOW_OPS",ceph_daemon="osd.8"} 0.0
+ceph_daemon_health_metrics{type="PENDING_CREATING_PGS",ceph_daemon="osd.8"} 0.0
+# HELP ceph_osd_flag_noup OSD Flag noup
+# TYPE ceph_osd_flag_noup untyped
+ceph_osd_flag_noup 0.0
+# HELP ceph_osd_flag_nodown OSD Flag nodown
+# TYPE ceph_osd_flag_nodown untyped
+ceph_osd_flag_nodown 0.0
+# HELP ceph_osd_flag_noout OSD Flag noout
+# TYPE ceph_osd_flag_noout untyped
+ceph_osd_flag_noout 0.0
+# HELP ceph_osd_flag_noin OSD Flag noin
+# TYPE ceph_osd_flag_noin untyped
+ceph_osd_flag_noin 0.0
+# HELP ceph_osd_flag_nobackfill OSD Flag nobackfill
+# TYPE ceph_osd_flag_nobackfill untyped
+ceph_osd_flag_nobackfill 0.0
+# HELP ceph_osd_flag_norebalance OSD Flag norebalance
+# TYPE ceph_osd_flag_norebalance untyped
+ceph_osd_flag_norebalance 0.0
+# HELP ceph_osd_flag_norecover OSD Flag norecover
+# TYPE ceph_osd_flag_norecover untyped
+ceph_osd_flag_norecover 0.0
+# HELP ceph_osd_flag_noscrub OSD Flag noscrub
+# TYPE ceph_osd_flag_noscrub untyped
+ceph_osd_flag_noscrub 0.0
+# HELP ceph_osd_flag_nodeep_scrub OSD Flag nodeep-scrub
+# TYPE ceph_osd_flag_nodeep_scrub untyped
+ceph_osd_flag_nodeep_scrub 0.0
+# HELP ceph_osd_weight OSD status weight
+# TYPE ceph_osd_weight untyped
+ceph_osd_weight{ceph_daemon="osd.0"} 1.0
+ceph_osd_weight{ceph_daemon="osd.1"} 1.0
+ceph_osd_weight{ceph_daemon="osd.2"} 1.0
+ceph_osd_weight{ceph_daemon="osd.3"} 1.0
+ceph_osd_weight{ceph_daemon="osd.4"} 1.0
+ceph_osd_weight{ceph_daemon="osd.5"} 1.0
+ceph_osd_weight{ceph_daemon="osd.6"} 1.0
+ceph_osd_weight{ceph_daemon="osd.7"} 1.0
+ceph_osd_weight{ceph_daemon="osd.8"} 1.0
+ceph_osd_weight{ceph_daemon="osd.9"} 1.0
+ceph_osd_weight{ceph_daemon="osd.10"} 1.0
+ceph_osd_weight{ceph_daemon="osd.11"} 1.0
+ceph_osd_weight{ceph_daemon="osd.12"} 1.0
+ceph_osd_weight{ceph_daemon="osd.13"} 1.0
+ceph_osd_weight{ceph_daemon="osd.14"} 1.0
+ceph_osd_weight{ceph_daemon="osd.15"} 1.0
+ceph_osd_weight{ceph_daemon="osd.16"} 1.0
+ceph_osd_weight{ceph_daemon="osd.17"} 1.0
+ceph_osd_weight{ceph_daemon="osd.18"} 1.0
+ceph_osd_weight{ceph_daemon="osd.19"} 1.0
+# HELP ceph_osd_up OSD status up
+# TYPE ceph_osd_up untyped
+ceph_osd_up{ceph_daemon="osd.0"} 1.0
+ceph_osd_up{ceph_daemon="osd.1"} 1.0
+ceph_osd_up{ceph_daemon="osd.2"} 1.0
+ceph_osd_up{ceph_daemon="osd.3"} 1.0
+ceph_osd_up{ceph_daemon="osd.4"} 1.0
+ceph_osd_up{ceph_daemon="osd.5"} 1.0
+ceph_osd_up{ceph_daemon="osd.6"} 1.0
+ceph_osd_up{ceph_daemon="osd.7"} 1.0
+ceph_osd_up{ceph_daemon="osd.8"} 1.0
+ceph_osd_up{ceph_daemon="osd.9"} 1.0
+ceph_osd_up{ceph_daemon="osd.10"} 1.0
+ceph_osd_up{ceph_daemon="osd.11"} 1.0
+ceph_osd_up{ceph_daemon="osd.12"} 1.0
+ceph_osd_up{ceph_daemon="osd.13"} 1.0
+ceph_osd_up{ceph_daemon="osd.14"} 1.0
+ceph_osd_up{ceph_daemon="osd.15"} 1.0
+ceph_osd_up{ceph_daemon="osd.16"} 1.0
+ceph_osd_up{ceph_daemon="osd.17"} 1.0
+ceph_osd_up{ceph_daemon="osd.18"} 1.0
+ceph_osd_up{ceph_daemon="osd.19"} 1.0
+# HELP ceph_osd_in OSD status in
+# TYPE ceph_osd_in untyped
+ceph_osd_in{ceph_daemon="osd.0"} 1.0
+ceph_osd_in{ceph_daemon="osd.1"} 1.0
+ceph_osd_in{ceph_daemon="osd.2"} 1.0
+ceph_osd_in{ceph_daemon="osd.3"} 1.0
+ceph_osd_in{ceph_daemon="osd.4"} 1.0
+ceph_osd_in{ceph_daemon="osd.5"} 1.0
+ceph_osd_in{ceph_daemon="osd.6"} 1.0
+ceph_osd_in{ceph_daemon="osd.7"} 1.0
+ceph_osd_in{ceph_daemon="osd.8"} 1.0
+ceph_osd_in{ceph_daemon="osd.9"} 1.0
+ceph_osd_in{ceph_daemon="osd.10"} 1.0
+ceph_osd_in{ceph_daemon="osd.11"} 1.0
+ceph_osd_in{ceph_daemon="osd.12"} 1.0
+ceph_osd_in{ceph_daemon="osd.13"} 1.0
+ceph_osd_in{ceph_daemon="osd.14"} 1.0
+ceph_osd_in{ceph_daemon="osd.15"} 1.0
+ceph_osd_in{ceph_daemon="osd.16"} 1.0
+ceph_osd_in{ceph_daemon="osd.17"} 1.0
+ceph_osd_in{ceph_daemon="osd.18"} 1.0
+ceph_osd_in{ceph_daemon="osd.19"} 1.0
+# HELP ceph_osd_apply_latency_ms OSD stat apply_latency_ms
+# TYPE ceph_osd_apply_latency_ms gauge
+ceph_osd_apply_latency_ms{ceph_daemon="osd.7"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.6"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.3"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.2"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.19"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.18"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.17"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.1"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.14"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.0"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.13"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.12"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.16"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.5"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.10"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.11"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.4"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.9"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.8"} 0.0
+ceph_osd_apply_latency_ms{ceph_daemon="osd.15"} 0.0
+# HELP ceph_osd_commit_latency_ms OSD stat commit_latency_ms
+# TYPE ceph_osd_commit_latency_ms gauge
+ceph_osd_commit_latency_ms{ceph_daemon="osd.7"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.6"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.3"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.2"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.19"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.18"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.17"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.1"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.14"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.0"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.13"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.12"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.16"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.5"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.10"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.11"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.4"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.9"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.8"} 0.0
+ceph_osd_commit_latency_ms{ceph_daemon="osd.15"} 0.0
+# HELP ceph_pool_recovering_objects_per_sec OSD pool stats: recovering_objects_per_sec
+# TYPE ceph_pool_recovering_objects_per_sec gauge
+ceph_pool_recovering_objects_per_sec{pool_id="1"} 0.0
+ceph_pool_recovering_objects_per_sec{pool_id="2"} 0.0
+# HELP ceph_pool_recovering_bytes_per_sec OSD pool stats: recovering_bytes_per_sec
+# TYPE ceph_pool_recovering_bytes_per_sec gauge
+ceph_pool_recovering_bytes_per_sec{pool_id="1"} 0.0
+ceph_pool_recovering_bytes_per_sec{pool_id="2"} 0.0
+# HELP ceph_pool_recovering_keys_per_sec OSD pool stats: recovering_keys_per_sec
+# TYPE ceph_pool_recovering_keys_per_sec gauge
+ceph_pool_recovering_keys_per_sec{pool_id="1"} 0.0
+ceph_pool_recovering_keys_per_sec{pool_id="2"} 0.0
+# HELP ceph_pool_num_objects_recovered OSD pool stats: num_objects_recovered
+# TYPE ceph_pool_num_objects_recovered gauge
+ceph_pool_num_objects_recovered{pool_id="1"} 0.0
+ceph_pool_num_objects_recovered{pool_id="2"} 0.0
+# HELP ceph_pool_num_bytes_recovered OSD pool stats: num_bytes_recovered
+# TYPE ceph_pool_num_bytes_recovered gauge
+ceph_pool_num_bytes_recovered{pool_id="1"} 0.0
+ceph_pool_num_bytes_recovered{pool_id="2"} 0.0
+# HELP ceph_pg_active PG active per pool
+# TYPE ceph_pg_active gauge
+ceph_pg_active{pool_id="1"} 32.0
+ceph_pg_active{pool_id="2"} 1.0
+# HELP ceph_pg_clean PG clean per pool
+# TYPE ceph_pg_clean gauge
+ceph_pg_clean{pool_id="1"} 32.0
+ceph_pg_clean{pool_id="2"} 1.0
+# HELP ceph_pg_down PG down per pool
+# TYPE ceph_pg_down gauge
+ceph_pg_down{pool_id="1"} 0.0
+ceph_pg_down{pool_id="2"} 0.0
+# HELP ceph_pg_recovery_unfound PG recovery_unfound per pool
+# TYPE ceph_pg_recovery_unfound gauge
+ceph_pg_recovery_unfound{pool_id="1"} 0.0
+ceph_pg_recovery_unfound{pool_id="2"} 0.0
+# HELP ceph_pg_backfill_unfound PG backfill_unfound per pool
+# TYPE ceph_pg_backfill_unfound gauge
+ceph_pg_backfill_unfound{pool_id="1"} 0.0
+ceph_pg_backfill_unfound{pool_id="2"} 0.0
+# HELP ceph_pg_scrubbing PG scrubbing per pool
+# TYPE ceph_pg_scrubbing gauge
+ceph_pg_scrubbing{pool_id="1"} 0.0
+ceph_pg_scrubbing{pool_id="2"} 0.0
+# HELP ceph_pg_degraded PG degraded per pool
+# TYPE ceph_pg_degraded gauge
+ceph_pg_degraded{pool_id="1"} 0.0
+ceph_pg_degraded{pool_id="2"} 0.0
+# HELP ceph_pg_inconsistent PG inconsistent per pool
+# TYPE ceph_pg_inconsistent gauge
+ceph_pg_inconsistent{pool_id="1"} 0.0
+ceph_pg_inconsistent{pool_id="2"} 0.0
+# HELP ceph_pg_peering PG peering per pool
+# TYPE ceph_pg_peering gauge
+ceph_pg_peering{pool_id="1"} 0.0
+ceph_pg_peering{pool_id="2"} 0.0
+# HELP ceph_pg_repair PG repair per pool
+# TYPE ceph_pg_repair gauge
+ceph_pg_repair{pool_id="1"} 0.0
+ceph_pg_repair{pool_id="2"} 0.0
+# HELP ceph_pg_recovering PG recovering per pool
+# TYPE ceph_pg_recovering gauge
+ceph_pg_recovering{pool_id="1"} 0.0
+ceph_pg_recovering{pool_id="2"} 0.0
+# HELP ceph_pg_forced_recovery PG forced_recovery per pool
+# TYPE ceph_pg_forced_recovery gauge
+ceph_pg_forced_recovery{pool_id="1"} 0.0
+ceph_pg_forced_recovery{pool_id="2"} 0.0
+# HELP ceph_pg_backfill_wait PG backfill_wait per pool
+# TYPE ceph_pg_backfill_wait gauge
+ceph_pg_backfill_wait{pool_id="1"} 0.0
+ceph_pg_backfill_wait{pool_id="2"} 0.0
+# HELP ceph_pg_incomplete PG incomplete per pool
+# TYPE ceph_pg_incomplete gauge
+ceph_pg_incomplete{pool_id="1"} 0.0
+ceph_pg_incomplete{pool_id="2"} 0.0
+# HELP ceph_pg_stale PG stale per pool
+# TYPE ceph_pg_stale gauge
+ceph_pg_stale{pool_id="1"} 0.0
+ceph_pg_stale{pool_id="2"} 0.0
+# HELP ceph_pg_remapped PG remapped per pool
+# TYPE ceph_pg_remapped gauge
+ceph_pg_remapped{pool_id="1"} 0.0
+ceph_pg_remapped{pool_id="2"} 0.0
+# HELP ceph_pg_deep PG deep per pool
+# TYPE ceph_pg_deep gauge
+ceph_pg_deep{pool_id="1"} 0.0
+ceph_pg_deep{pool_id="2"} 0.0
+# HELP ceph_pg_backfilling PG backfilling per pool
+# TYPE ceph_pg_backfilling gauge
+ceph_pg_backfilling{pool_id="1"} 0.0
+ceph_pg_backfilling{pool_id="2"} 0.0
+# HELP ceph_pg_forced_backfill PG forced_backfill per pool
+# TYPE ceph_pg_forced_backfill gauge
+ceph_pg_forced_backfill{pool_id="1"} 0.0
+ceph_pg_forced_backfill{pool_id="2"} 0.0
+# HELP ceph_pg_backfill_toofull PG backfill_toofull per pool
+# TYPE ceph_pg_backfill_toofull gauge
+ceph_pg_backfill_toofull{pool_id="1"} 0.0
+ceph_pg_backfill_toofull{pool_id="2"} 0.0
+# HELP ceph_pg_recovery_wait PG recovery_wait per pool
+# TYPE ceph_pg_recovery_wait gauge
+ceph_pg_recovery_wait{pool_id="1"} 0.0
+ceph_pg_recovery_wait{pool_id="2"} 0.0
+# HELP ceph_pg_recovery_toofull PG recovery_toofull per pool
+# TYPE ceph_pg_recovery_toofull gauge
+ceph_pg_recovery_toofull{pool_id="1"} 0.0
+ceph_pg_recovery_toofull{pool_id="2"} 0.0
+# HELP ceph_pg_undersized PG undersized per pool
+# TYPE ceph_pg_undersized gauge
+ceph_pg_undersized{pool_id="1"} 0.0
+ceph_pg_undersized{pool_id="2"} 0.0
+# HELP ceph_pg_activating PG activating per pool
+# TYPE ceph_pg_activating gauge
+ceph_pg_activating{pool_id="1"} 0.0
+ceph_pg_activating{pool_id="2"} 0.0
+# HELP ceph_pg_peered PG peered per pool
+# TYPE ceph_pg_peered gauge
+ceph_pg_peered{pool_id="1"} 0.0
+ceph_pg_peered{pool_id="2"} 0.0
+# HELP ceph_pg_snaptrim PG snaptrim per pool
+# TYPE ceph_pg_snaptrim gauge
+ceph_pg_snaptrim{pool_id="1"} 0.0
+ceph_pg_snaptrim{pool_id="2"} 0.0
+# HELP ceph_pg_snaptrim_wait PG snaptrim_wait per pool
+# TYPE ceph_pg_snaptrim_wait gauge
+ceph_pg_snaptrim_wait{pool_id="1"} 0.0
+ceph_pg_snaptrim_wait{pool_id="2"} 0.0
+# HELP ceph_pg_snaptrim_error PG snaptrim_error per pool
+# TYPE ceph_pg_snaptrim_error gauge
+ceph_pg_snaptrim_error{pool_id="1"} 0.0
+ceph_pg_snaptrim_error{pool_id="2"} 0.0
+# HELP ceph_pg_creating PG creating per pool
+# TYPE ceph_pg_creating gauge
+ceph_pg_creating{pool_id="1"} 0.0
+ceph_pg_creating{pool_id="2"} 0.0
+# HELP ceph_pg_unknown PG unknown per pool
+# TYPE ceph_pg_unknown gauge
+ceph_pg_unknown{pool_id="1"} 0.0
+ceph_pg_unknown{pool_id="2"} 0.0
+# HELP ceph_pg_premerge PG premerge per pool
+# TYPE ceph_pg_premerge gauge
+ceph_pg_premerge{pool_id="1"} 0.0
+ceph_pg_premerge{pool_id="2"} 0.0
+# HELP ceph_pg_failed_repair PG failed_repair per pool
+# TYPE ceph_pg_failed_repair gauge
+ceph_pg_failed_repair{pool_id="1"} 0.0
+ceph_pg_failed_repair{pool_id="2"} 0.0
+# HELP ceph_pg_laggy PG laggy per pool
+# TYPE ceph_pg_laggy gauge
+ceph_pg_laggy{pool_id="1"} 0.0
+ceph_pg_laggy{pool_id="2"} 0.0
+# HELP ceph_pg_wait PG wait per pool
+# TYPE ceph_pg_wait gauge
+ceph_pg_wait{pool_id="1"} 0.0
+ceph_pg_wait{pool_id="2"} 0.0
+# HELP ceph_cluster_total_bytes DF total_bytes
+# TYPE ceph_cluster_total_bytes gauge
+ceph_cluster_total_bytes 644161208320.0
+# HELP ceph_cluster_by_class_total_bytes DF total_bytes
+# TYPE ceph_cluster_by_class_total_bytes gauge
+ceph_cluster_by_class_total_bytes{device_class="hdd"} 644161208320.0
+# HELP ceph_cluster_total_used_bytes DF total_used_bytes
+# TYPE ceph_cluster_total_used_bytes gauge
+ceph_cluster_total_used_bytes 989814784.0
+# HELP ceph_cluster_by_class_total_used_bytes DF total_used_bytes
+# TYPE ceph_cluster_by_class_total_used_bytes gauge
+ceph_cluster_by_class_total_used_bytes{device_class="hdd"} 989814784.0
+# HELP ceph_cluster_total_used_raw_bytes DF total_used_raw_bytes
+# TYPE ceph_cluster_total_used_raw_bytes gauge
+ceph_cluster_total_used_raw_bytes 989814784.0
+# HELP ceph_cluster_by_class_total_used_raw_bytes DF total_used_raw_bytes
+# TYPE ceph_cluster_by_class_total_used_raw_bytes gauge
+ceph_cluster_by_class_total_used_raw_bytes{device_class="hdd"} 989814784.0
+# HELP ceph_pool_max_avail DF pool max_avail
+# TYPE ceph_pool_max_avail gauge
+ceph_pool_max_avail{pool_id="1"} 200998469632.0
+ceph_pool_max_avail{pool_id="2"} 200998469632.0
+# HELP ceph_pool_avail_raw DF pool avail_raw
+# TYPE ceph_pool_avail_raw gauge
+ceph_pool_avail_raw{pool_id="1"} 602995424999.0
+ceph_pool_avail_raw{pool_id="2"} 602995424999.0
+# HELP ceph_pool_stored DF pool stored
+# TYPE ceph_pool_stored gauge
+ceph_pool_stored{pool_id="1"} 0.0
+ceph_pool_stored{pool_id="2"} 1224746.0
+# HELP ceph_pool_stored_raw DF pool stored_raw
+# TYPE ceph_pool_stored_raw gauge
+ceph_pool_stored_raw{pool_id="1"} 0.0
+ceph_pool_stored_raw{pool_id="2"} 3674238.0
+# HELP ceph_pool_objects DF pool objects
+# TYPE ceph_pool_objects gauge
+ceph_pool_objects{pool_id="1"} 0.0
+ceph_pool_objects{pool_id="2"} 2.0
+# HELP ceph_pool_dirty DF pool dirty
+# TYPE ceph_pool_dirty gauge
+ceph_pool_dirty{pool_id="1"} 0.0
+ceph_pool_dirty{pool_id="2"} 0.0
+# HELP ceph_pool_quota_bytes DF pool quota_bytes
+# TYPE ceph_pool_quota_bytes gauge
+ceph_pool_quota_bytes{pool_id="1"} 0.0
+ceph_pool_quota_bytes{pool_id="2"} 0.0
+# HELP ceph_pool_quota_objects DF pool quota_objects
+# TYPE ceph_pool_quota_objects gauge
+ceph_pool_quota_objects{pool_id="1"} 0.0
+ceph_pool_quota_objects{pool_id="2"} 0.0
+# HELP ceph_pool_rd DF pool rd
+# TYPE ceph_pool_rd counter
+ceph_pool_rd{pool_id="1"} 0.0
+ceph_pool_rd{pool_id="2"} 96.0
+# HELP ceph_pool_rd_bytes DF pool rd_bytes
+# TYPE ceph_pool_rd_bytes counter
+ceph_pool_rd_bytes{pool_id="1"} 0.0
+ceph_pool_rd_bytes{pool_id="2"} 83968.0
+# HELP ceph_pool_wr DF pool wr
+# TYPE ceph_pool_wr counter
+ceph_pool_wr{pool_id="1"} 0.0
+ceph_pool_wr{pool_id="2"} 113.0
+# HELP ceph_pool_wr_bytes DF pool wr_bytes
+# TYPE ceph_pool_wr_bytes counter
+ceph_pool_wr_bytes{pool_id="1"} 0.0
+ceph_pool_wr_bytes{pool_id="2"} 1404928.0
+# HELP ceph_pool_compress_bytes_used DF pool compress_bytes_used
+# TYPE ceph_pool_compress_bytes_used gauge
+ceph_pool_compress_bytes_used{pool_id="1"} 0.0
+ceph_pool_compress_bytes_used{pool_id="2"} 0.0
+# HELP ceph_pool_compress_under_bytes DF pool compress_under_bytes
+# TYPE ceph_pool_compress_under_bytes gauge
+ceph_pool_compress_under_bytes{pool_id="1"} 0.0
+ceph_pool_compress_under_bytes{pool_id="2"} 0.0
+# HELP ceph_pool_bytes_used DF pool bytes_used
+# TYPE ceph_pool_bytes_used gauge
+ceph_pool_bytes_used{pool_id="1"} 0.0
+ceph_pool_bytes_used{pool_id="2"} 3702784.0
+# HELP ceph_pool_percent_used DF pool percent_used
+# TYPE ceph_pool_percent_used gauge
+ceph_pool_percent_used{pool_id="1"} 0.0
+ceph_pool_percent_used{pool_id="2"} 6.140612640592735e-06
+# HELP ceph_cluster_osd_blocklist_count OSD Blocklist Count osd_blocklist_count
+# TYPE ceph_cluster_osd_blocklist_count gauge
+ceph_cluster_osd_blocklist_count 18.0
+# HELP ceph_num_objects_degraded Number of degraded objects
+# TYPE ceph_num_objects_degraded gauge
+ceph_num_objects_degraded 0.0
+# HELP ceph_num_objects_misplaced Number of misplaced objects
+# TYPE ceph_num_objects_misplaced gauge
+ceph_num_objects_misplaced 0.0
+# HELP ceph_num_objects_unfound Number of unfound objects
+# TYPE ceph_num_objects_unfound gauge
+ceph_num_objects_unfound 0.0
+# HELP ceph_healthcheck_slow_ops OSD or Monitor requests taking a long time to process
+# TYPE ceph_healthcheck_slow_ops gauge
+ceph_healthcheck_slow_ops 0.0
+# HELP ceph_prometheus_collect_duration_seconds_sum The sum of seconds took to collect all metrics of this exporter
+# TYPE ceph_prometheus_collect_duration_seconds_sum counter
+ceph_prometheus_collect_duration_seconds_sum{method="get_health"} 0.08784818649291992
+ceph_prometheus_collect_duration_seconds_sum{method="get_pool_stats"} 0.007208108901977539
+ceph_prometheus_collect_duration_seconds_sum{method="get_df"} 0.013692378997802734
+ceph_prometheus_collect_duration_seconds_sum{method="get_osd_blocklisted_entries"} 1.3536248207092285
+ceph_prometheus_collect_duration_seconds_sum{method="get_fs"} 0.02346634864807129
+ceph_prometheus_collect_duration_seconds_sum{method="get_quorum_status"} 0.022464990615844727
+ceph_prometheus_collect_duration_seconds_sum{method="get_mgr_status"} 0.4838221073150635
+ceph_prometheus_collect_duration_seconds_sum{method="get_pg_status"} 0.02682328224182129
+ceph_prometheus_collect_duration_seconds_sum{method="get_osd_stats"} 0.029721736907958984
+ceph_prometheus_collect_duration_seconds_sum{method="get_metadata_and_osd_status"} 1.2952451705932617
+ceph_prometheus_collect_duration_seconds_sum{method="get_num_objects"} 0.01556253433227539
+ceph_prometheus_collect_duration_seconds_sum{method="get_rbd_stats"} 0.11195158958435059
+# HELP ceph_prometheus_collect_duration_seconds_count The amount of metrics gathered for this exporter
+# TYPE ceph_prometheus_collect_duration_seconds_count counter
+ceph_prometheus_collect_duration_seconds_count{method="get_health"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_pool_stats"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_df"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_osd_blocklisted_entries"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_fs"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_quorum_status"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_mgr_status"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_pg_status"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_osd_stats"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_metadata_and_osd_status"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_num_objects"} 150.0
+ceph_prometheus_collect_duration_seconds_count{method="get_rbd_stats"} 150.0

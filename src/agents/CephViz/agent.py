@@ -177,6 +177,23 @@ def fetch_session_of_cluster(cluster_name: str):
     return cluster_session
 
 
+def get_cluster_status(cluster_name: str):
+    """Fetches Ceph cluster status using the cluster_name as parameter"""
+    cluster_name = (
+        re.search(r"Cluster \d+", cluster_name).group()
+        if re.search(r"Cluster \d+", cluster_name)
+        else "Cluster 1"
+    )
+    print(f"🚀 Entered get_cluster_status() for {cluster_name}")
+    try:
+        return ceph_ops.get_cluster_status(fetch_session_of_cluster(cluster_name))
+
+    except Exception as e:
+        return json.dumps(
+            {"status": "error", "message": f"❌ Failed to execute command: {str(e)}"}
+        )
+
+
 def get_cluster_health(cluster_name: str):
     """Fetches the health status of a Ceph cluster using the cluster_name as parameter"""
     cluster_name = (
@@ -434,11 +451,20 @@ def get_cephfs_metadata_pool_usage(cluster_name: str, fs_name: str):
 
 # Define AI Tools
 tools = [
-    # Tool(
-    #     name="Get Cluster Health",
-    #     func=get_cluster_health,
-    #     description="Gets the health status of a Ceph cluster. Provide 'cluster_name'. Retrieve Key Metrics and Actionable Insights from the data",
-    # ),
+    Tool(
+        name="Get Cluster Status",
+        func=get_cluster_status,
+        description=(
+            "Fetch the current Ceph cluster status by providing 'cluster_name'. Ensure the response includes basic info about the cluster. Retrieve the info such as id, health, services such as mon, mgr, mds, osd, pools and volumes for both the Cluster 1 and Cluster 2. Retrieve the key metrics and show in structured format. Summarise with the data avaialble"
+            # "Retrieve Key Metrics and Actionable Insights from the data."
+        ),
+        force_execute=True,
+    ),
+    Tool(
+        name="Get Cluster Health",
+        func=get_cluster_health,
+        description="Gets the health status of a Ceph cluster. Provide 'cluster_name'. Retrieve Key Metrics and Actionable Insights from the data",
+    ),
     Tool(
         name="Get OSD status",
         func=osd_status,

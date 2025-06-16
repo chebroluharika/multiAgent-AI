@@ -1,0 +1,3 @@
+venv/*
+frontend/venv/*
+backend/venv/*

@@ -108,16 +108,6 @@ def get_bug_details(bug_id):
     # out = get_mock_bug_details(bug_id)
     return out
 
-def get_bug_details_based_on_keywords(keywords):
-    """
-    Retrieve/returns bug details based on keywords for a given bug ID.
-    """
-
-    bug = bzapi.quick_search(keywords)
-    print(f"{bug = }")
-    out = serialize_bug_details(bug)
-    return out   
-
 
 def serialize_comments(comments):
     """
@@ -329,10 +319,10 @@ def fetch_bugs_async(product, component, limit=100):
     return all_bugs_details
 
 
-def get_all_bugs_details_fast(component):
+def get_all_bugs_details_fast(product):
     # product_component = product_component.split(",")
     # product, component = product_component[0], product_component[1]
-    all_bugs = fetch_bugs_async("Red Hat Ceph Storage", component)
+    all_bugs = fetch_bugs_async(product, "Red Hat Ceph Storage")
     return all_bugs
 
 
@@ -343,11 +333,6 @@ tools = [
         func=get_bug_details,
         description="give the out of the bug id, this tool will give bug details.",
     ),
-    # Tool(
-    #     name="get bug details of a bug based on keywords",
-    #     func=get_bug_details_based_on_keywords,
-    #     description="give the out of the bug keywords, this tool will give bug details.",
-    # ),
     Tool(
         func=get_comments,
         name="get bug comments of a single bug",
@@ -432,7 +417,7 @@ if __name__ == "__main__":
         api_key = st.session_state["bugzilla_token"]
         bzapi = bugzilla.Bugzilla(BUGZILLA_URL, api_key=api_key)
 
-    # print(get_all_bugs_details_fast("Red Hat Ceph Storage, RGW"))
+    # print(get_all_bugs_details_fast("Red Hat Ceph Storage,RGW"))
 
     # Use only get_bug_details tool ignore everything else
 

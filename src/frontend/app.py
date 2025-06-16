@@ -1,12 +1,10 @@
 import sys
-import torch
 from pathlib import Path
 
 import streamlit as st
+import torch
 
 sys.path.append(str(Path(__file__).parent.parent))
-
-torch.classes.__path__ = [] # add this line to manually set it to empty.
 
 from agents.Observability.backend.scrape_metricsdata import scrape_metrics
 from agents.CephViz.agent import connect_cluster
@@ -14,6 +12,8 @@ from frontend.helpers import (
     process_query,
     test_ssh_connection,
 )
+
+torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 
 # Class to handle individual chat sessions
@@ -43,7 +43,9 @@ chat_history = ChatHistory()
 
 
 # Streamlit page configuration
-st.set_page_config(page_title="Ceph Orchestrator Intelligence", page_icon="🤖", layout="wide")
+st.set_page_config(
+    page_title="Ceph Orchestrator Intelligence", page_icon="🤖", layout="wide"
+)
 
 # Custom CSS for a more attractive UI
 st.markdown(
@@ -63,7 +65,7 @@ st.markdown(
 # Display the main title
 st.markdown(
     """
-    <h1 style='text-align: center; color: #4CAF50; font-size: 36px;'>🤖 Ceph Intelligence Orchestrator</h1>
+    <h1 style='text-align: center; color: #4CAF50; font-size: 36px;'>🤖 Ceph Observability Orchestrator</h1>
     <p style='text-align: center; font-size: 18px; color: gray;'>Monitor and manage your Ceph cluster effortlessly</p>
     <hr style='border: 1px solid #ccc;'>
 """,

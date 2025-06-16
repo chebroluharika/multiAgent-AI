@@ -9,7 +9,7 @@ save_dir = Path(__file__).parent.parent.parent / "data"
 print("Saving to", save_dir)
 
 
-response = requests.get("https://github.com/ceph/ceph/archive/refs/heads/squid.zip")
+response = requests.get("https://github.com/ceph/ceph/archive/refs/heads/main.zip")
 with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
     zip_ref.extractall(save_dir)
 
