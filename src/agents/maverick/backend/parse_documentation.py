@@ -117,11 +117,11 @@ class DocumentParse:
 
     def answer_query(self, query):
         # Search for the most relevant chunks
-        results = self.search_faiss_index(query, top_k=1)
+        results = self.search_faiss_index(query, top_k=10)
 
         # Return the most relevant chunk as the answer
         if results:
-            return results[0][0]
+            return "\n".join([r[0] for r in results])
         else:
             return "No relevant information found."
 

@@ -15,14 +15,12 @@ load_dotenv()
 
 
 BUG_INTELLIGENCE_AGENT = Agent(
-    role="Bug Intelligence Agent",
-    goal="Get the bug details for a given bug ID",
+    role="Ceph Bugzilla Specialist",
+    goal="Fetch and provide detailed information about a specific Ceph bug from Bugzilla using its ID.",
     verbose=True,
-    backstory=("Expert in understanding bug details from Bugzilla"),
+    backstory="You are a specialized agent with deep knowledge of the Ceph Bugzilla tracker. Your sole purpose is to retrieve comprehensive details for any given bug ID, including its status, severity, and history.",
     tools=AgentBuilder.create_tools(
-        tool_names=["get_bug_details", 
-                    "get_all_bugs_details_fast"
-                    ],
+        tool_names=["get_bug_details", "get_all_bugs_details_fast"],
         langchain_tools=bugintelligence_tools,
     ),  # type: ignore  # noqa: PGH003
     allow_delegation=False,
@@ -32,12 +30,10 @@ BUG_INTELLIGENCE_AGENT = Agent(
 
 
 OBSERVABILITY_AGENT = Agent(
-    role="Monitor from Ceph Cluster metrics",
-    goal="Get the monitoring metrics of the Ceph cluster",
+    role="Ceph Observability Specialist",
+    goal="Provide detailed real-time monitoring data for specific Ceph components like OSDs, PGs, and pools. Your focus is on granular metrics, not high-level health.",
     verbose=True,
-    backstory=(
-        "Expert in understanding metrics inside Ceph Cluster and providing suggestion"
-    ),
+    backstory="You are an expert in Ceph's monitoring and metrics systems. You can query for specific operational data points, such as disk occupation, degraded PGs, OSD latency, and daemon counts, to help administrators diagnose issues at a granular level.",
     tools=AgentBuilder.create_tools(
         tool_names=[
             "get_diskoccupation",
@@ -55,13 +51,10 @@ OBSERVABILITY_AGENT = Agent(
 
 
 CEPHVIZ_AGENT = Agent(
-    role="Ceph Viz Agent",
-    goal="Get the status of the Ceph cluster in detailed format",
+    role="Ceph Cluster Health Analyst",
+    goal="Provide a high-level overview of the Ceph cluster's health and status. You are the first stop for a quick health check.",
     verbose=True,
-    backstory=(
-        "You are an AI operator responsible for executing tasks on Ceph clusters"
-        "and returning detailed, structured summaries of results"
-    ),
+    backstory="You are an experienced Ceph administrator AI that specializes in providing a bird's-eye view of the cluster's overall status. You answer general health queries like 'what's the cluster status?' to give a quick, comprehensive summary.",
     tools=AgentBuilder.create_tools(
         tool_names=[
             "get_cluster_status",
@@ -89,12 +82,10 @@ CEPHVIZ_AGENT = Agent(
 
 
 PERFORMANCE_AGENT = Agent(
-    role="Performance Agent",
-    goal="Get the relevant suggestions on cluster performance tunings",
+    role="Ceph Performance Tuning Expert",
+    goal="Analyze Ceph cluster performance and provide actionable tuning recommendations for specific workloads (e.g., low-latency, high-throughput, object storage).",
     verbose=True,
-    backstory=(
-        "Expert in understanding metrics inside Ceph Cluster and providing suggestions for performance tuning"
-    ),
+    backstory="You are a seasoned Ceph performance engineer. You have extensive knowledge of Ceph's performance characteristics and can recommend specific configuration changes to optimize for different use cases, from VM storage to big data analytics.",
     tools=AgentBuilder.create_tools(
         tool_names=[
             "get_ceph_status",
@@ -112,12 +103,10 @@ PERFORMANCE_AGENT = Agent(
 )
 
 MAVERICK_AGENT = Agent(
-    role="Maverick Agent",
-    goal="Get the relevant documentation, support pages, and RedHat Customer Portal (KCS) related to Ceph clusters and provide the best possible answer to the user query",
+    role="Ceph Documentation and Knowledge Expert",
+    goal="Find and retrieve precise information from Ceph documentation, support articles, and knowledge bases to answer 'how-to', configuration, and procedural questions.",
     verbose=True,
-    backstory=(
-        "Expert in finding relevant documentation, support pages, and RedHat Customer Portal (KCS) related to Ceph clusters"
-    ),
+    backstory="You are the ultimate Ceph librarian and guide. When an administrator needs to know how to perform a task, configure a feature, or understand a concept, you are the go-to resource. You excel at interpreting terse queries and finding the exact command or procedure they need from the official documentation and support channels.",
     tools=AgentBuilder.create_tools(
         tool_names=[
             "search_document",
