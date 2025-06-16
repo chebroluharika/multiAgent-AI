@@ -2,15 +2,17 @@ import sys
 from pathlib import Path
 
 import streamlit as st
+import torch
 
 sys.path.append(str(Path(__file__).parent.parent))
-
 
 from agents.Observability.backend.scrape_metricsdata import scrape_metrics
 from frontend.helpers import (
     process_query,
     test_ssh_connection,
 )
+
+torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 
 # Class to handle individual chat sessions
@@ -40,7 +42,9 @@ chat_history = ChatHistory()
 
 
 # Streamlit page configuration
-st.set_page_config(page_title="Ceph Orchestrator Intelligence", page_icon="🤖", layout="wide")
+st.set_page_config(
+    page_title="Ceph Orchestrator Intelligence", page_icon="🤖", layout="wide"
+)
 
 # Custom CSS for a more attractive UI
 st.markdown(
