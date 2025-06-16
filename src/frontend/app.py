@@ -7,6 +7,7 @@ import torch
 sys.path.append(str(Path(__file__).parent.parent))
 
 from agents.Observability.backend.scrape_metricsdata import scrape_metrics
+from agents.CephViz.agent import connect_cluster
 from frontend.helpers import (
     process_query,
     test_ssh_connection,
@@ -101,7 +102,8 @@ if connect_button:
         failed_ips = {}
 
         for ip in ip_list:
-            scrape_metrics(ip)
+            connect_cluster("Cluster 1", ip)
+            scrape_metrics(ip, ssh_username, ssh_password)
             if (
                 ip in st.session_state.cluster_data.values()
             ):  # Skip already connected IPs
