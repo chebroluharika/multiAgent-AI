@@ -6,20 +6,17 @@ from crewai.tools.base_tool import Tool as CrewTool
 # from crewai.tools import BaseTool as CrewTool
 from langchain_core.tools import Tool as LangChainTool
 
-
-class AgentsEnum(Enum):
-    BUG_INTELLIGENCE = "bug_intelligence"
-    CEPHVIZ = "cephviz"
-    OBSERVABILITY = "observability"
-    PERFORMANCE = "performance"
-    MAVERICK = "maverick"
+from src.orchestration.schema import AgentsEnum
 
 
 class AgentFactory:
     def __init__(self):
         self.agents: dict[AgentsEnum, Agent] = {}
 
-    def get_agent(self, agent_name: AgentsEnum):
+    def get_agent(self, agent_name: AgentsEnum | str):
+        if isinstance(agent_name, str):
+            agent_name = AgentsEnum(agent_name)
+
         return self.agents[agent_name]
 
     def add_agent(self, agent_name: AgentsEnum | str, agent: Agent):

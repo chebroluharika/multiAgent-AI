@@ -3,12 +3,22 @@ import streamlit as st
 
 from orchestration.flow import CephAgentsFlow
 
-ceph_agents_flow = CephAgentsFlow()
 
+def process_query(prompt: str):
+    flow = st.session_state.get("flow")
+    if flow is None:
+        flow = CephAgentsFlow()
+        st.session_state.flow = flow
 
-def process_query(query: str):
-    response = ceph_agents_flow.kickoff(inputs={"topic": query})
-    return response
+    if flow is not None:
+        try:
+            result = flow.kickoff(inputs={"topic": prompt})
+        except Exception as e:
+            result = f"Error during flow execution: {e}"
+    else:
+        result = "Flow is not initialized."
+
+    return result
 
 
 def test_ssh_connection(ip, username, password):

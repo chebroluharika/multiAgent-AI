@@ -179,3 +179,4 @@ docs/
 # GitHub downloaded files
 *.zip
 ceph-main
+__pycache__

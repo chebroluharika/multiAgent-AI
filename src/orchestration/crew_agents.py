@@ -9,6 +9,7 @@ from agents.maverick.frontend.ceph_troubleshooting_assistant import (
 from agents.Observability.backend.agent import tools as observability_tools
 from agents.perf.frontend.app import tools as performance_tools
 from llm.llm_client import gemini_llm_client
+from src.orchestration.prompts import BUG_INTELLIGENCE_SEARCH_BUG_CONTEXT
 from utils.agents import AgentBuilder, AgentFactory, AgentsEnum
 
 load_dotenv()
@@ -16,11 +17,15 @@ load_dotenv()
 
 BUG_INTELLIGENCE_AGENT = Agent(
     role="Ceph Bugzilla Specialist",
-    goal="Fetch and provide detailed information about a specific Ceph bug from Bugzilla using its ID.",
+    goal=f"Fetch and provide detailed information about a specific Ceph bug from Bugzilla using its ID or search parameters. Use the `get_bugs_by_search_params` tool to search for bugs based on particular criteria. The search parameters details are provided in the context below:\n{BUG_INTELLIGENCE_SEARCH_BUG_CONTEXT}",
     verbose=True,
     backstory="You are a specialized agent with deep knowledge of the Ceph Bugzilla tracker. Your sole purpose is to retrieve comprehensive details for any given bug ID, including its status, severity, and history.",
     tools=AgentBuilder.create_tools(
-        tool_names=["get_bug_details", "get_all_bugs_details_fast"],
+        tool_names=[
+            "get_bug_details",
+            # "get_all_bugs_details_fast",
+            "get_bugs_by_search_params",
+        ],
         langchain_tools=bugintelligence_tools,
     ),  # type: ignore  # noqa: PGH003
     allow_delegation=False,
