@@ -1,4 +1,5 @@
 import asyncio
+import json
 import re
 from datetime import datetime
 
@@ -96,16 +97,27 @@ def get_mock_bug_details(bug_id: int):
     return bug_report[0]
 
 
-def get_bug_details(bug_id):
+def get_bug_details(bug_id: int):
     """
     Retrieve/returns bug details for a given bug ID.
     """
     print(f"{bug_id = }")
 
     bug = bzapi.getbug(bug_id)
-    print(f"{bug = }")
     out = serialize_bug_details(bug)
-    # out = get_mock_bug_details(bug_id)
+    return out
+
+
+def get_bugs_by_search_params(params: dict):
+    """
+    Retrieve/returns bug details for a given search parameters.
+    """
+    print(f"Params used for finding bugs: {params = }")
+
+    # query = bzapi.build_query(**params)
+    bugs = bzapi.query(params)
+    print(f"{bugs = }")
+    out = [serialize_bug_details(bug) for bug in bugs][:2]
     return out
 
 
@@ -366,6 +378,11 @@ tools = [
         name="give the list of all bugs details fast",
         description="Provided product (Red Hat Ceph Storage) and component (RGW, Cephadm) "
         + "tool will  fetches the bug summary of all the bugs of that product and components",
+    ),
+    Tool(
+        func=get_bugs_by_search_params,
+        name="get bugs by search parameters",
+        description="Provide search parameters to fetch bugs based on particular criteria.",
     ),
 ]
 

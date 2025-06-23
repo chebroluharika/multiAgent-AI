@@ -6,12 +6,13 @@ import torch
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from agents.Observability.backend.scrape_metricsdata import scrape_metrics
 from agents.CephViz.agent import connect_cluster
+from agents.Observability.backend.scrape_metricsdata import scrape_metrics
 from frontend.helpers import (
     process_query,
     test_ssh_connection,
 )
+from orchestration.flow import Memory
 
 torch.classes.__path__ = []  # add this line to manually set it to empty.
 
@@ -75,6 +76,8 @@ st.markdown(
 # Initialize session state for storing cluster data
 if "cluster_data" not in st.session_state:
     st.session_state.cluster_data = {}  # Stores {"Cluster 1": "192.168.1.10", ...}
+if "flow" not in st.session_state:
+    st.session_state.flow = None
 
 # Sidebar: Ceph SSH Authentication Panel
 st.sidebar.markdown("<h2>🔐 Ceph SSH Authentication</h2>", unsafe_allow_html=True)
@@ -154,6 +157,22 @@ if st.session_state.cluster_data:
             st.markdown(f"✅ **{cluster_name}: {ip}**")
 
 
+# Agent Memory Expander
+with st.sidebar.expander("🕵️ Agent Memory", expanded=False):
+    flow = st.session_state.get("flow")
+    if flow and flow.state.memory:
+        for i, mem in enumerate(reversed(flow.state.memory)):
+            mem = Memory(**mem)
+            st.markdown(f"**Memory {len(flow.state.memory) - i}**")
+            st.text_area("Query", mem.query, disabled=True, key=f"mem_q_{i}")
+            st.text_area("Response", mem.response, disabled=True, key=f"mem_r_{i}")
+            st.text_area(
+                "Agents", "\n".join(mem.agents), disabled=True, key=f"mem_a_{i}"
+            )
+    else:
+        st.write("No memory to display yet.")
+
+
 # Display the main title
 st.markdown(
     "<h1 style='text-align: center;'>🤖 Welcome to Ceph Intelligence Orchestrator!</h1>",
@@ -203,4 +222,6 @@ if user_has_entered_message:  # noqa: SIM102
         f"🗑️ Clear {current_chat_name} Chat", key=f"clear_chat_{current_chat_name}"
     ):
         st.session_state.chat_sessions[current_chat_name].reset_user_messages()
+        if flow := st.session_state.flow:
+            flow.clear_memory()
         st.rerun()
