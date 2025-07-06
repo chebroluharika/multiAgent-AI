@@ -1,4 +1,0 @@
-streamlit
-langchain-community
-ollama
-streamlit_autorefresh
