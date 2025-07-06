@@ -54,3 +54,8 @@ select = [
     "PYI", # flake8-pyi
     "RUF",
 ]
+
+[tool.uv.workspace]
+members = [
+    "src/agents/maverick",
+]
