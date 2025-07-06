@@ -4,3 +4,9 @@
 [submodule "src/agents/bug_intelligence"]
 	path = src/agents/bug_intelligence
 	url = https://github.com/chebroluharika/Bug-Intelligence
+[submodule "src/agents/cephviz"]
+	path = src/agents/cephviz
+	url = https://github.com/chebroluharika/cephViz
+[submodule "src/agents/observability"]
+	path = src/agents/observability
+	url = https://github.com/chebroluharika/observability

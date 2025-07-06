@@ -56,7 +56,7 @@ cd src
 uv run orchestration/flow.py
 ```
 
-# Running the frontend
+## Running the frontend
 
 ```bash
 cd src
@@ -64,10 +64,24 @@ streamlit run frontend/app.py
 ```
 
 
+# Submodule setup
 git submodule add https://github.com/chebroluharika/maverick src/agents/maverick
-
-
+cd src/agents
+uv init --lib bug_intelligence
 
 git submodule add https://github.com/chebroluharika/Bug-Intelligence src/agents/bug_intelligence
-cd src/agents/bug_intelligence
+cd src/agents
 uv init --lib bug_intelligence
+
+git submodule add https://github.com/chebroluharika/cephViz src/agents/cephviz
+cd src/agents
+uv init --lib cephviz
+cd cephviz
+uv add -r src\cephviz\backend\requirements.txt
+
+git submodule add https://github.com/chebroluharika/observability src/agents/observability
+cd src/agents
+uv init --lib observability
+cd observability
+uv add -r src\observability\backend\requirements.txt
+
