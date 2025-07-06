@@ -38,6 +38,7 @@ dependencies = [
     "bug_intelligence",
     "cephviz",
     "observability",
+    "perf",
 ]
 
 [tool.uv.sources]
@@ -45,6 +46,7 @@ maverick = { workspace = true }
 bug_intelligence = { workspace = true }
 cephviz = { workspace = true }
 observability = { workspace = true }
+perf = { workspace = true }
 
 [tool.ruff.lint]
 select = [
@@ -68,4 +70,5 @@ members = [
     "src/agents/bug_intelligence",
     "src/agents/cephviz",
     "src/agents/observability",
+    "src/agents/perf",
 ]

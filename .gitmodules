@@ -10,3 +10,6 @@
 [submodule "src/agents/observability"]
 	path = src/agents/observability
 	url = https://github.com/chebroluharika/observability
+[submodule "src/agents/perf"]
+	path = src/agents/perf
+	url = https://github.com/chebroluharika/perf

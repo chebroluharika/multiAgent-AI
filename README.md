@@ -45,7 +45,7 @@ uv run scripts/scrape_ceph_documentation.py
 
 ```bash
 cd src/
-uv run agents/maverick/backend/parse_documentation.py
+uv run agents/maverick/src/maverick/backend/parse_documentation.py
 ```
 
 
@@ -84,4 +84,10 @@ cd src/agents
 uv init --lib observability
 cd observability
 uv add -r src\observability\backend\requirements.txt
+
+git submodule add https://github.com/chebroluharika/perf src/agents/perf
+cd src/agents
+uv init --lib perf
+cd perf
+uv add -r src\perf\backend\requirements.txt
 
