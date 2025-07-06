@@ -34,7 +34,11 @@ dependencies = [
     "streamlit==1.42.0",
     "tool>=0.8.0",
     "tools>=1.0.2",
+    "maverick",
 ]
+
+[tool.uv.sources]
+maverick = { workspace = true }
 
 # [tool.ruff]
 # extend-exclude = ["src/agents/**/*.py"]

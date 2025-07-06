@@ -1,13 +1,12 @@
 from crewai import Agent
 from dotenv import load_dotenv
 
-from agents.bugIntelligence.app import tools as bugintelligence_tools
-from agents.CephViz.agent import tools as ceph_tools
-from agents.maverick.frontend.ceph_troubleshooting_assistant import (
-    tools as maverick_tools,
-)
-from agents.Observability.backend.agent import tools as observability_tools
-from agents.perf.frontend.app import tools as performance_tools
+# from agents.bugIntelligence.app import tools as bugintelligence_tools
+# from agents.CephViz.agent import tools as ceph_tools
+from maverick import tools as maverick_tools
+
+# from agents.Observability.backend.agent import tools as observability_tools
+# from agents.perf.frontend.app import tools as performance_tools
 from llm.llm_client import gemini_llm_client
 from src.orchestration.prompts import BUG_INTELLIGENCE_SEARCH_BUG_CONTEXT
 from utils.agents import AgentBuilder, AgentFactory, AgentsEnum

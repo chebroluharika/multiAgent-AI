@@ -2,6 +2,12 @@ version = 1
 revision = 2
 requires-python = "==3.11.*"
 
+[manifest]
+members = [
+    "maverick",
+    "multiagent-ai",
+]
+
 [[package]]
 name = "acres"
 version = "0.3.0"
@@ -1803,6 +1809,11 @@ wheels = [
 ]
 
 [[package]]
+name = "maverick"
+version = "0.1.0"
+source = { editable = "src/agents/maverick" }
+
+[[package]]
 name = "mdurl"
 version = "0.1.2"
 source = { registry = "https://pypi.org/simple" }
@@ -1888,6 +1899,7 @@ dependencies = [
     { name = "langchain" },
     { name = "langchain-community" },
     { name = "langchain-huggingface" },
+    { name = "maverick" },
     { name = "numpy" },
     { name = "ollama" },
     { name = "pandas" },
@@ -1920,6 +1932,7 @@ requires-dist = [
     { name = "langchain", specifier = ">=0.3.25" },
     { name = "langchain-community", specifier = ">=0.3.23" },
     { name = "langchain-huggingface", specifier = ">=0.1.2" },
+    { name = "maverick", editable = "src/agents/maverick" },
     { name = "numpy", specifier = "==1.26.4" },
     { name = "ollama", specifier = ">=0.4.8" },
     { name = "pandas", specifier = "==2.1.1" },
