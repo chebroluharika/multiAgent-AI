@@ -35,13 +35,12 @@ dependencies = [
     "tool>=0.8.0",
     "tools>=1.0.2",
     "maverick",
+    "bug_intelligence",
 ]
 
 [tool.uv.sources]
 maverick = { workspace = true }
-
-# [tool.ruff]
-# extend-exclude = ["src/agents/**/*.py"]
+bug_intelligence = { workspace = true }
 
 [tool.ruff.lint]
 select = [
@@ -62,4 +61,5 @@ select = [
 [tool.uv.workspace]
 members = [
     "src/agents/maverick",
+    "src/agents/bug_intelligence",
 ]

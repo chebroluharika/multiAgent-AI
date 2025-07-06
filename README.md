@@ -62,3 +62,12 @@ uv run orchestration/flow.py
 cd src
 streamlit run frontend/app.py
 ```
+
+
+git submodule add https://github.com/chebroluharika/maverick src/agents/maverick
+
+
+
+git submodule add https://github.com/chebroluharika/Bug-Intelligence src/agents/bug_intelligence
+cd src/agents/bug_intelligence
+uv init --lib bug_intelligence

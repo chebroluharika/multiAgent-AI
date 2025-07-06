@@ -1,5 +1,3 @@
-from enum import Enum
-
 from crewai import Agent
 from crewai.tools.base_tool import Tool as CrewTool
 
