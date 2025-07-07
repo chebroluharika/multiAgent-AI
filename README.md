@@ -24,15 +24,21 @@ Python - 3.11
 
 1. Install `uv` package manager: https://docs.astral.sh/uv/getting-started/installation/
 
-2. Sync dependencies:
+2. # Initialize and update all git submodules  
+```bash
+git submodule update --init --recursive
+```
+
+3. Sync dependencies:
 ```bash
 uv sync
 ```
-3. Optional - if you want to use python 3.11.x when you have multiple python versions installed.
-    ``` bash
-    uv venv -p 3.11
-    source .venv/bin/activate
-    ```
+
+4. Optional - if you want to use python 3.11.x when you have multiple python versions installed.
+ ``` bash
+ uv venv -p 3.11
+ source .venv/bin/activate
+ ```
 
 ## Get the documentation
 
