@@ -6,8 +6,9 @@ import torch
 
 sys.path.append(str(Path(__file__).parent.parent))
 
-from agents.CephViz.agent import connect_cluster
-from agents.Observability.backend.scrape_metricsdata import scrape_metrics
+from cephviz.agent import connect_cluster
+from observability.backend.scrape_metricsdata import scrape_metrics
+
 from frontend.helpers import (
     process_query,
     test_ssh_connection,

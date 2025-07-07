@@ -1,12 +1,10 @@
-from enum import Enum
-
 from crewai import Agent
 from crewai.tools.base_tool import Tool as CrewTool
 
 # from crewai.tools import BaseTool as CrewTool
 from langchain_core.tools import Tool as LangChainTool
 
-from src.orchestration.schema import AgentsEnum
+from orchestration.schema import AgentsEnum
 
 
 class AgentFactory:

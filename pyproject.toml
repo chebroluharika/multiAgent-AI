@@ -34,10 +34,19 @@ dependencies = [
     "streamlit==1.42.0",
     "tool>=0.8.0",
     "tools>=1.0.2",
+    "maverick",
+    "bug_intelligence",
+    "cephviz",
+    "observability",
+    "perf",
 ]
 
-# [tool.ruff]
-# extend-exclude = ["src/agents/**/*.py"]
+[tool.uv.sources]
+maverick = { workspace = true }
+bug_intelligence = { workspace = true }
+cephviz = { workspace = true }
+observability = { workspace = true }
+perf = { workspace = true }
 
 [tool.ruff.lint]
 select = [
@@ -53,4 +62,13 @@ select = [
     "PGH", # pygrep-hooks
     "PYI", # flake8-pyi
     "RUF",
+]
+
+[tool.uv.workspace]
+members = [
+    "src/agents/maverick",
+    "src/agents/bug_intelligence",
+    "src/agents/cephviz",
+    "src/agents/observability",
+    "src/agents/perf",
 ]

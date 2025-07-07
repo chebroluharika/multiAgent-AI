@@ -1,8 +1,0 @@
-requests
-bcrypt
-python-dotenv
-argparse
-langchain
-langchain_huggingface
-huggingface_hub
-paramiko
