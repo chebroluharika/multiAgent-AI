@@ -73,7 +73,7 @@ streamlit run frontend/app.py
 # Submodule setup
 git submodule add https://github.com/chebroluharika/maverick src/agents/maverick
 cd src/agents
-uv init --lib bug_intelligence
+uv init --lib maverick
 
 git submodule add https://github.com/chebroluharika/Bug-Intelligence src/agents/bug_intelligence
 cd src/agents
