@@ -14,7 +14,7 @@ load_dotenv()
 
 
 BUG_INTELLIGENCE_AGENT = Agent(
-    role="Ceph Bugzilla Specialist",
+    role="Bugzilla Specialist",
     goal=(
         f"Fetch and provide detailed reports about bugs from Bugzilla using its ID or search parameters. "
         f"Use the `get_bugs_by_search_params` tool to search for bugs based on particular criteria. "
@@ -25,7 +25,7 @@ BUG_INTELLIGENCE_AGENT = Agent(
     ),
     verbose=True,
     backstory=(
-        "You are a specialized agent with deep knowledge of the Ceph Bugzilla tracker. "
+        "You are a specialized agent with deep knowledge of the Bugzilla tracker. "
         "Your sole purpose is to retrieve comprehensive details for any given bug ID, including its status, severity, and history. "
         "When responding, ensure you provide the complete output from the tool, formatted as a clear and complete markdown document."
     ),
@@ -142,11 +142,12 @@ agent_factory.add_agent(AgentsEnum.MAVERICK, MAVERICK_AGENT)
 agent_factory.add_agent(AgentsEnum.PERFORMANCE, PERFORMANCE_AGENT)
 
 if __name__ == "__main__":
-    # print(
-    #     agent_factory.get_agent(AgentsEnum.BUG_INTELLIGENCE).kickoff(
-    #         messages="What is the bug details for bug id 12345?"
-    #     )
-    # )
+    print(
+        agent_factory.get_agent(AgentsEnum.BUG_INTELLIGENCE).kickoff(
+            # messages="What is the bug details for bug id 12345?"
+            messages="""I am getting this error while I am trying to deploy NVMe service "failed to connect to all addresses; last error: UNKNOWN: ipv4:10.0.65.114:5500: Failed to connect to remote host: Connection refused" debug_error_string = "UNKNOWN:failed to connect to all addresses; last error: UNKNOWN: ipv4:10.0.65.114:5500: Failed to connect to remote host: Connection refused {grpc_status:14, created_time:"2025-07-04T09:42:30.766517267+00:00"}" What steps we can take for this or do we have any bugs already raised on this?"""
+        )
+    )
 
     # print(
     #     agent_factory.get_agent(AgentsEnum.CEPHVIZ).kickoff(
@@ -166,8 +167,8 @@ if __name__ == "__main__":
     #     )
     # )
 
-    print(
-        agent_factory.get_agent(AgentsEnum.MAVERICK).kickoff(
-            messages="How to configure the sync modules in multisite?"
-        )
-    )
+    # print(
+    #     agent_factory.get_agent(AgentsEnum.MAVERICK).kickoff(
+    #         messages="How to configure the sync modules in multisite?"
+    #     )
+    # )
