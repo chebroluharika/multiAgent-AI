@@ -3,6 +3,7 @@ from pathlib import Path
 
 import streamlit as st
 import torch
+torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 sys.path.append(str(Path(__file__).parent.parent))
 
@@ -14,8 +15,6 @@ from frontend.helpers import (
     test_ssh_connection,
 )
 from orchestration.flow import Memory
-
-torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 
 # Class to handle individual chat sessions
