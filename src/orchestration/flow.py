@@ -10,9 +10,13 @@ from orchestration.schema import CephAgentsState, Memory
 
 def client_outcome_architect(query: str, opinions: str) -> str:
     agent = Agent(
-        role="Response Formatter",
-        goal="Format the raw text from specialist agents into a clean, human readable response for the user, with minimal alteration or summarization of the content.",
-        backstory="You are a formatting expert. You take raw text and make it look good. You don't change the meaning or content, you just structure it for clarity.",
+        role="Technical Report Generator",
+        goal="Present a cohesive, professional technical report in markdown that answers the user's query using the information from specialist agents, without exposing internal section headings or agent names.",
+        backstory=(
+            "You are an expert in technical documentation and reporting. Your job is to synthesize the information provided by specialist agents into a single, cohesive, professional markdown report for the user. "
+            "You must ensure all relevant technical details and nuances are included, but you should not expose internal section headings such as '[Specialist Name] Opinion' or agent names. "
+            "Your report should read as a unified technical answer, not a collection of separate agent outputs."
+        ),
         llm=gemini_llm_client(),
         allow_delegation=False,
         max_iter=1,
@@ -21,18 +25,20 @@ def client_outcome_architect(query: str, opinions: str) -> str:
 
     task = Task(
         description=(
-            "Your task is to compile the information from 'Specialists' Opinions' into a single response to the 'User Query'.\n\n"
-            "**Key Instructions:**\n"
-            "- **Present all details:** You MUST present all information from the specialists' opinions. Do not summarize, shorten, or simplify.\n"
-            "- **No conversational text:** Do not add introductory sentences like 'Here is the information...'. Get straight to the point.\n"
-            "- **Format for clarity:** Structure the final response in a clear and readable way. Use markdown (e.g., headings, lists, bold text) to organize the information.\n"
-            "- **Handle empty input:** If the specialists' opinions are empty, simply state: 'No information was found to answer your query.'\n\n"
-            f"**User Query:**\n{query}\n\n"
-            f"**Specialists' Opinions:**\n{opinions}"
+            "You are to construct a cohesive technical report in markdown that answers the user's query using the information provided by specialist agents.\n\n"
+            "## Instructions:\n"
+            "- **Technical Report Format:** Present the answer as a single, unified technical report in markdown, with clear structure and appropriate headings.\n"
+            "- **Title:** Begin with a top-level heading (e.g., '# Ceph Technical Report') and a brief section stating the user's query.\n"
+            "- **Cohesive Answer:** Integrate all relevant information from the specialists' opinions into a single, readable technical answer. Do not include any internal section headings such as '[Specialist Name] Opinion' or agent names. Do not show raw agent output blocks or attribution.\n"
+            "- **No Omission:** You MUST include all relevant technical details and nuances from the specialists' opinions, but present them as a unified answer.\n"
+            "- **No Extra Commentary:** Do NOT add any introductory, transitional, or explanatory text beyond what is needed for a professional technical report.\n"
+            "- **If opinions are empty:** If the specialists' opinions are empty, simply state: 'No information was found to answer your query.'\n\n"
+            f"## User Query\n{query}\n\n"
+            f"## Technical Findings\n{opinions}"
         ),
         expected_output=(
-            "The final, formatted response containing all details from the specialists' opinions, structured clearly with markdown. "
-            "It should start directly with the information, not with a conversational introduction."
+            "A markdown-formatted technical report that provides a single, cohesive answer to the user's query, integrating all relevant information from the specialists' opinions. "
+            "The report must not expose internal agent names or section headings, and should read as a unified technical answer."
         ),
         agent=agent,
     )
@@ -120,51 +126,10 @@ if __name__ == "__main__":
     # Performance
 
     flow = CephAgentsFlow()
-    flow.state.memory = [
-        {
-            "query": "give me bug details for 12345",
-            "response": """
-Here are the details for bug ID 12345:
 
-*   **Assigned to:** bero@redhat.com
-*   **Creator:** shishz@alum.rpi.edu
-*   **Product:** Red Hat Linux
-*   **Component:** rhs-printfilters
-*   **Status:** CLOSED
-*   **Resolution:** RAWHIDE
-*   **Summary:** ps-to-printer.fpi
-*   **Creation Time:** 06/16/2000
-*   **Last Change Time:** 10/08/2024
-*   **Comments:**
-    *   comment\_0:
-        *   time: 10/08/2024
-        *   creation\_time: 10/08/2024
-        *   creator: fluekearehana@gmail.com
-        *   bug\_comments: whenever this problem appears, I often play browser game to cool down my mind <https://getawayshootout.io>
-        *   comment\_count: 4
-    *   comment\_1:
-        *   time: 10/08/2024
-        *   creation\_time: 10/08/2024
-        *   creator: fluekearehana@gmail.com
-        *   bug\_comments: whenever this problem appears, I often play browser game to cool down my mind <https://getawayshootout.io>
-        *   comment\_count: 4
-    *   comment\_2:
-        *   time: 10/08/2024
-        *   creation\_time: 10/08/2024
-        *   creator: fluekearehana@gmail.com
-        *   bug\_comments: whenever this problem appears, I often play browser game to cool down my mind <https://getawayshootout.io>
-        *   comment\_count: 4
-    *   comment\_4:
-        *   time: 10/08/2024
-        *   creation\_time: 10/08/2024
-        *   creator: fluekearehana@gmail.com
-        *   bug\_comments: whenever this problem appears, I often play browser game to cool down my mind <https://getawayshootout.io>
-        *   comment\_count: 4
-""",
-        }
-    ]
+    question = """NVMe GW CLIs are not working. I am getting below error when I run any NVMe GW CLI "failed to connect to all addresses; last error: UNKNOWN: ipv4:10.0.65.114:5500: Failed to connect to remote host: Connection refused"
 
-    question = "find more bugs related to the product mentioned in this bug"
+How to resolve this, and do we have any bugs already reported for this."""
 
     result = flow.kickoff(inputs={"topic": question})
     print("Question:\n", question, end="\n\n")
