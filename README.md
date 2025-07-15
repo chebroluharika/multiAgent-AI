@@ -44,7 +44,7 @@ uv sync
 
 ```bash
 cd src/
-uv run scripts/scrape_ceph_documentation.py
+uv run scripts/scrape_ceph_documentation.py -- branch branch-you-want-to-scrape
 ```
 
 ## Create FAISS index
