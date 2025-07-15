@@ -5,15 +5,17 @@ from pathlib import Path
 import requests
 from tqdm import tqdm
 
-save_dir = Path(__file__).parent.parent.parent / "data"
+save_dir = Path(__file__).parent.parent.parent / "data/git-clone"
 print("Saving to", save_dir)
 
-
-response = requests.get("https://github.com/ceph/ceph/archive/refs/heads/main.zip")
+branch_name = "squid"
+response = requests.get(
+    f"https://github.com/ceph/ceph/archive/refs/heads/{branch_name}.zip"
+)
 with zipfile.ZipFile(io.BytesIO(response.content)) as zip_ref:
     zip_ref.extractall(save_dir)
 
-docs_dir = save_dir / "ceph-main/doc"
+docs_dir = save_dir / f"ceph-{branch_name}/doc"
 
 
 doc_text = ""

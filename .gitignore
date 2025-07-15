@@ -180,3 +180,4 @@ docs/
 *.zip
 ceph-main
 __pycache__
+data
