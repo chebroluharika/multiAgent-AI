@@ -66,7 +66,7 @@ uv run orchestration/flow.py
 
 ```bash
 cd src
-streamlit run frontend/app.py
+uv run streamlit run frontend/app.py
 ```
 
 
