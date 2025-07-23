@@ -41,7 +41,10 @@ uv sync
  ```
 
 5. Download model
+```bash
 python -c 'from sentence_transformers import SentenceTransformer; model = SentenceTransformer("all-MiniLM-L6-v2"); model.save("data/models/all-MiniLM-L6-v2")'
+```
+Verify that a folder called `all-MiniLM-L6-v2` is created in `data/models` directory.
 
 ## Get the documentation
 
@@ -102,4 +105,6 @@ uv add -r src\perf\backend\requirements.txt
 
 
 # Run as docker
+```bash
 docker-compose --env-file .env -f docker/docker-compose.yml up --build
+```
