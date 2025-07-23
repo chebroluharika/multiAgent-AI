@@ -97,3 +97,4 @@ uv init --lib perf
 cd perf
 uv add -r src\perf\backend\requirements.txt
 
+docker-compose --env-file .env -f docker/docker-compose.yml up
