@@ -40,6 +40,9 @@ uv sync
  source .venv/bin/activate
  ```
 
+1. Download model
+python -c 'from sentence_transformers import SentenceTransformer; model = SentenceTransformer("all-MiniLM-L6-v2"); model.save("data/models/all-MiniLM-L6-v2")'
+
 ## Get the documentation
 
 ```bash
@@ -97,3 +100,6 @@ uv init --lib perf
 cd perf
 uv add -r src\perf\backend\requirements.txt
 
+
+# Run as docker
+docker-compose --env-file .env -f docker/docker-compose.yml up --build

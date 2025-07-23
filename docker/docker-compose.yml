@@ -1,0 +1,24 @@
+services:
+  multi-agent-orchestrator:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      # Streamlit ports (when app.environment=dev)
+      - "127.0.0.1:8501:8501"
+    environment:
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - GEMINI_API_KEY=${GEMINI_API_KEY}
+      - BUGZILLA_URL=${BUGZILLA_URL}
+      - BUGZILLA_API_KEY=${BUGZILLA_API_KEY}
+      - CREWAI_STORAGE_DIR=${CREWAI_STORAGE_DIR}
+      - DOCUMENTATION=${DOCUMENTATION}
+      - CEPH_GIT_BRANCH_NAME=${CEPH_GIT_BRANCH_NAME}
+      - PYTHONUNBUFFERED=1
+      - PYTHONIOENCODING=UTF-8
+    volumes:
+      - ../data:/app/data

@@ -47,6 +47,20 @@ bug_intelligence = { workspace = true }
 cephviz = { workspace = true }
 observability = { workspace = true }
 perf = { workspace = true }
+torch = [
+  { index = "pytorch-cpu"},
+]
+
+[project.optional-dependencies]
+cpu = [
+  "torch>=2.6.0",
+]
+
+[[tool.uv.index]]
+name = "pytorch-cpu"
+url = "https://download.pytorch.org/whl/cpu"
+explicit = true
+
 
 [tool.ruff.lint]
 select = [
