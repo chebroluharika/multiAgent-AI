@@ -23,9 +23,9 @@ COPY --from=builder --chown=app:app /app /app
 
 ENV PATH="/app/.venv/bin:$PATH"
 
-WORKDIR /app
-COPY ./src/ /app
+COPY ./src/ /app/src
 
 EXPOSE 8501
 
+WORKDIR /app/src
 CMD ["streamlit", "run", "frontend/app.py", "--server.port", "8501"]
