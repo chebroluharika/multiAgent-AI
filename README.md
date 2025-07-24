@@ -98,11 +98,11 @@ docker-compose --env-file .env -f docker/docker-compose.yml up --build
 1. **Add Agent Submodules**
 
 ```bash
-git submodule add https://github.ibm.com/Chebrolu-Harika/maverick src/agents/maverick
-git submodule add https://github.ibm.com/Chebrolu-Harika/Bug-Intelligence src/agents/bug_intelligence
-git submodule add https://github.ibm.com/Chebrolu-Harika/cephViz src/agents/cephviz
-git submodule add https://github.ibm.com/Chebrolu-Harika/observability src/agents/observability
-git submodule add https://github.ibm.com/Chebrolu-Harika/perf src/agents/perf
+git submodule add https://github.com/chebroluharika/maverick src/agents/maverick
+git submodule add https://github.com/chebroluharika/Bug-Intelligence src/agents/bug_intelligence
+git submodule add https://github.com/chebroluharika/cephViz src/agents/cephviz
+git submodule add https://github.com/chebroluharika/observability src/agents/observability
+git submodule add https://github.com/chebroluharika/perf src/agents/perf
 ```
 
 2. **Initialize with `uv` and Install Dependencies**
