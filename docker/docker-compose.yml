@@ -3,6 +3,8 @@ services:
     build:
       context: ..
       dockerfile: docker/Dockerfile
+    # Uncomment following line to force the platform to amd64 - Mac users
+    # platform: "linux/amd64"
     ports:
       # Streamlit ports (when app.environment=dev)
       - "127.0.0.1:8501:8501"

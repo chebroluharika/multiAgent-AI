@@ -85,6 +85,9 @@ uv run streamlit run frontend/app.py
 ```
 
 ## Run as docker
+
+Important: If you are a MAC user, uncomment platform field in `docker-compose.yml` before running following command.
+
 ```bash
 docker-compose --env-file .env -f docker/docker-compose.yml up --build
 ```
