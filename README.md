@@ -20,9 +20,13 @@ Key Features:
 ## Support matrix
 Python - 3.11
 
+## Architecture
+![Architecture Diagram](images/architecture.png)
+
 ## Installation
 
 1. Install `uv` package manager: https://docs.astral.sh/uv/getting-started/installation/
+
 
 2. # Initialize and update all git submodules  
 ```bash
@@ -42,15 +46,18 @@ uv sync
 
 5. Download model
 ```bash
+uv pip install sentence-transformers
 python -c 'from sentence_transformers import SentenceTransformer; model = SentenceTransformer("all-MiniLM-L6-v2"); model.save("data/models/all-MiniLM-L6-v2")'
 ```
 Verify that a folder called `all-MiniLM-L6-v2` is created in `data/models` directory.
+
+6. Create Gemini LLM API key and place it in `.env`
 
 ## Get the documentation
 
 ```bash
 cd src/
-uv run scripts/scrape_ceph_documentation.py --branch branch-you-want-to-scrape
+uv run scripts/scrape_ceph_documentation.py --branch <branch-you-want-to-scrape>
 ```
 
 ## Create FAISS index
@@ -59,6 +66,8 @@ uv run scripts/scrape_ceph_documentation.py --branch branch-you-want-to-scrape
 cd src/
 uv run agents/maverick/src/maverick/backend/parse_documentation.py
 ```
+
+Note: Ensure that both the `.txt` and `.faiss` files are located in the directory specified by the `DOCUMENTATION` path in the `.env` file.
 
 
 ## Running the backend
@@ -75,36 +84,52 @@ cd src
 uv run streamlit run frontend/app.py
 ```
 
-
-# Submodule setup
-git submodule add https://github.com/chebroluharika/maverick src/agents/maverick
-cd src/agents
-uv init --lib maverick
-
-git submodule add https://github.com/chebroluharika/Bug-Intelligence src/agents/bug_intelligence
-cd src/agents
-uv init --lib bug_intelligence
-
-git submodule add https://github.com/chebroluharika/cephViz src/agents/cephviz
-cd src/agents
-uv init --lib cephviz
-cd cephviz
-uv add -r src\cephviz\backend\requirements.txt
-
-git submodule add https://github.com/chebroluharika/observability src/agents/observability
-cd src/agents
-uv init --lib observability
-cd observability
-uv add -r src\observability\backend\requirements.txt
-
-git submodule add https://github.com/chebroluharika/perf src/agents/perf
-cd src/agents
-uv init --lib perf
-cd perf
-uv add -r src\perf\backend\requirements.txt
-
-
-# Run as docker
+## Run as docker
 ```bash
 docker-compose --env-file .env -f docker/docker-compose.yml up --build
+```
+
+
+### Submodule Setup
+
+1. **Add Agent Submodules**
+
+```bash
+git submodule add https://github.ibm.com/Chebrolu-Harika/maverick src/agents/maverick
+git submodule add https://github.ibm.com/Chebrolu-Harika/Bug-Intelligence src/agents/bug_intelligence
+git submodule add https://github.ibm.com/Chebrolu-Harika/cephViz src/agents/cephviz
+git submodule add https://github.ibm.com/Chebrolu-Harika/observability src/agents/observability
+git submodule add https://github.ibm.com/Chebrolu-Harika/perf src/agents/perf
+```
+
+2. **Initialize with `uv` and Install Dependencies**
+
+```bash
+# Initialize all agent libraries
+cd src/agents
+
+uv init --lib maverick
+uv init --lib bug_intelligence
+uv init --lib cephviz
+uv init --lib observability
+uv init --lib perf
+```
+
+3. **Install Backend Requirements**
+
+```bash
+# cephviz backend requirements
+cd cephviz
+uv add -r src/cephviz/backend/requirements.txt
+cd ..
+
+# observability backend requirements
+cd observability
+uv add -r src/observability/backend/requirements.txt
+cd ..
+
+# perf backend requirements
+cd perf
+uv add -r src/perf/backend/requirements.txt
+cd ..
 ```
