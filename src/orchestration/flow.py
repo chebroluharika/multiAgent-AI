@@ -84,7 +84,58 @@ class CephAgentsFlow(Flow[CephAgentsState]):
         self.add_log("info", "Orchestrator", "Analyzing query and selecting agents...")
         chosen_agents = ceph_orchestrator(query, memory)
 
-        self.state.chosen_agents = [agent.value for agent in chosen_agents]
+        # Convert chosen_agents to a list of strings if they are not already
+        if chosen_agents and hasattr(chosen_agents[0], 'value'):
+            chosen_agents = [agent.value for agent in chosen_agents]
+
+        # Capture the raw reasoning from the orchestrator
+        orchestrator_agent = Agent(
+            role="Ceph Orchestrator Manager",
+            goal="""Explain the reasoning behind agent selection for a given query.""",
+            backstory="""You are an expert system designed to provide clear, insightful explanations about how and why specific Ceph agents are selected for a given query. Your job is to break down the decision-making process, highlighting the key factors that influence agent selection, such as query keywords, intent, and the unique capabilities of each specialist agent.""",
+            llm=gemini_llm_client(),
+            allow_delegation=False,
+            max_iter=1,
+            verbose=True,
+        )
+        reasoning_task = Task(
+            description=f"""Explain in detail why specific agents were chosen for the following query.
+            Provide a clear, step-by-step breakdown of the reasoning.
+            
+            Query: {query}
+            
+            Chosen Agents: {', '.join(chosen_agents) if chosen_agents else 'No agents selected'}
+            
+            Explain:
+            1. What specific keywords or intent triggered each agent selection?
+            2. Why were these agents considered the most appropriate?
+            3. What unique capabilities make these agents suitable?""",
+            expected_output="""A detailed, structured explanation of agent selection reasoning, including:
+            - Specific keywords or intents that triggered agent selection
+            - Rationale for why selected agents are most appropriate
+            - Unique capabilities of each selected agent
+            - Clear, concise breakdown of the decision-making process""",
+            agent=orchestrator_agent,
+        )
+        
+        try:
+            reasoning_result = reasoning_task.execute_sync()
+            
+            # Log the detailed reasoning
+            self.add_log(
+                "info", 
+                "Orchestrator", 
+                f"🔍 Agent Selection Reasoning:\n{reasoning_result.raw}"
+            )
+        except Exception as e:
+            self.add_log(
+                "warning", 
+                "Orchestrator", 
+                f"❗ Could not generate detailed agent selection reasoning: {str(e)}"
+            )
+
+        # Ensure chosen_agents is a list of strings
+        self.state.chosen_agents = chosen_agents
 
         if self.state.chosen_agents:
             agents_list = ", ".join(

@@ -257,7 +257,11 @@ if prompt := st.chat_input("Type your message here..."):
 
     with st.chat_message("assistant"):  # noqa: SIM117
         with st.spinner("🤔 Thinking..."):
-            response = process_query(prompt)
+            # Create an empty container for real-time logs
+            log_container = st.empty()
+            
+            # Modify process_query to accept log_container
+            response = process_query(prompt, log_container)
 
             # Get logs from session state
             logs = st.session_state.get("current_logs", [])
