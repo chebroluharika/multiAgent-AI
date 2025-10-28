@@ -5,7 +5,7 @@ from crewai.flow.persistence import persist
 from llm.llm_client import gemini_llm_client
 from orchestration.crew_agents import agent_factory
 from orchestration.orchestrator import ceph_orchestrator
-from orchestration.schema import CephAgentsState, Memory
+from orchestration.schema import CephAgentsState, LogEntry, Memory
 
 
 def client_outcome_architect(query: str, opinions: str) -> str:
@@ -51,30 +51,148 @@ def client_outcome_architect(query: str, opinions: str) -> str:
 class CephAgentsFlow(Flow[CephAgentsState]):
     llm = gemini_llm_client()
 
+    def add_log(self, level: str, agent_name: str, message: str):
+        """Add a log entry to the flow state."""
+        log_entry = LogEntry(level=level, agent_name=agent_name, message=message)
+        self.state.logs.append(log_entry.model_dump())
+
+    def log_agent_tools(self, agent, agent_name: str):
+        """Log the tools available to an agent."""
+        if hasattr(agent, "tools") and agent.tools:
+            tool_names = []
+            for tool in agent.tools:
+                if hasattr(tool, "name"):
+                    tool_names.append(tool.name)
+                elif hasattr(tool, "func") and hasattr(tool.func, "__name__"):
+                    tool_names.append(tool.func.__name__)
+
+            if tool_names:
+                tools_str = ", ".join(tool_names[:5])  # Show first 5 tools
+                if len(tool_names) > 5:
+                    tools_str += f" (and {len(tool_names) - 5} more)"
+                self.add_log("info", agent_name, f"🔧 Available tools: {tools_str}")
+
     @start()
     def schedule_orchestration(self):
         query = self.state.topic
         memory = self.load_memory()
+
+        # Log the query being processed
+        query_preview = query[:80] + "..." if len(query) > 80 else query
+        self.add_log("info", "Orchestrator", f"📝 Processing query: {query_preview}")
+
+        self.add_log("info", "Orchestrator", "Analyzing query and selecting agents...")
         chosen_agents = ceph_orchestrator(query, memory)
 
         self.state.chosen_agents = [agent.value for agent in chosen_agents]
 
+        if self.state.chosen_agents:
+            agents_list = ", ".join(
+                [agent.replace("_", " ").title() for agent in self.state.chosen_agents]
+            )
+            self.add_log(
+                "success", "Orchestrator", f"✨ Selected agents: {agents_list}"
+            )
+        else:
+            self.add_log("warning", "Orchestrator", "No agents selected for this query")
+
     @listen(schedule_orchestration)
     def conduct_orchestration(self):
         opinions: dict[str, str] = {}
+
         for agent_name in self.state.chosen_agents:
+            formatted_agent_name = agent_name.replace("_", " ").title()
             try:
+                # Log agent start
+                self.add_log(
+                    "info", formatted_agent_name, "🤖 Starting agent execution..."
+                )
+
+                # Get agent and log details
                 agent = agent_factory.get_agent(agent_name)
+                agent_role = getattr(agent, "role", formatted_agent_name)
+
+                # Log agent role
+                self.add_log("info", formatted_agent_name, f"👤 Role: {agent_role}")
+
+                # Log agent goal
+                agent_goal = getattr(agent, "goal", "")
+                if agent_goal:
+                    if len(agent_goal) > 150:
+                        goal_preview = agent_goal[:150] + "..."
+                    else:
+                        goal_preview = agent_goal
+                    self.add_log(
+                        "info", formatted_agent_name, f"🎯 Goal: {goal_preview}"
+                    )
+
+                # Log available tools
+                self.log_agent_tools(agent, formatted_agent_name)
+
+                # Log query being processed
+                if len(self.state.topic) > 100:
+                    query_preview = self.state.topic[:100] + "..."
+                else:
+                    query_preview = self.state.topic
+                self.add_log("info", formatted_agent_name, f"📝 Query: {query_preview}")
+
+                # Execute the agent
                 opinion = agent.kickoff(messages=self.state.topic)
                 opinions[agent_name] = opinion.raw
-                print(f"Usage Metrics: {opinion.usage_metrics}")
+
+                # Log completion with output preview
+                if len(opinion.raw) > 200:
+                    output_preview = opinion.raw[:200] + "..."
+                else:
+                    output_preview = opinion.raw
+                self.add_log(
+                    "info", formatted_agent_name, f"📊 Output: {output_preview}"
+                )
+
+                # Log usage metrics if available
+                if hasattr(opinion, "usage_metrics") and opinion.usage_metrics:
+                    metrics = opinion.usage_metrics
+                    try:
+                        if hasattr(metrics, "total_tokens"):
+                            self.add_log(
+                                "info",
+                                formatted_agent_name,
+                                f"📊 Tokens used: {metrics.total_tokens}",  # type: ignore
+                            )
+                        elif isinstance(metrics, dict) and "total_tokens" in metrics:
+                            self.add_log(
+                                "info",
+                                formatted_agent_name,
+                                f"📊 Tokens used: {metrics['total_tokens']}",
+                            )
+                    except Exception:
+                        pass  # Skip metrics logging if format is unexpected
+
+                # Log successful completion
+                self.add_log(
+                    "success", formatted_agent_name, "✅ Agent completed successfully"
+                )
+
             except Exception as e:
-                print(f"\nError with {agent_name}: {e}\n")
+                error_msg = str(e)
+                print(f"\nError with {agent_name}: {error_msg}\n")
+                self.add_log("error", formatted_agent_name, f"❌ Error: {error_msg}")
                 continue
+
         self.state.opinions = opinions
 
     @listen(conduct_orchestration)
     def generate_client_response(self):
+        self.add_log("info", "Report Generator", "📝 Generating final response...")
+
+        # Log how many agent opinions are being synthesized
+        num_opinions = len(self.state.opinions)
+        self.add_log(
+            "info",
+            "Report Generator",
+            f"📊 Synthesizing {num_opinions} agent opinion(s)",
+        )
+
         opinions = "\n\n".join(
             [
                 f"{agent_name}: {opinion}"
@@ -84,6 +202,17 @@ class CephAgentsFlow(Flow[CephAgentsState]):
 
         client_response = client_outcome_architect(self.state.topic, opinions)
         self.state.response = client_response
+
+        # Log response preview
+        if len(client_response) > 150:
+            response_preview = client_response[:150] + "..."
+        else:
+            response_preview = client_response
+        self.add_log("info", "Report Generator", f"📄 Response: {response_preview}")
+
+        self.add_log(
+            "success", "Report Generator", "✅ Response generated successfully"
+        )
         self.save_memory()
         return client_response
 
@@ -97,6 +226,7 @@ class CephAgentsFlow(Flow[CephAgentsState]):
                 query=self.state.topic,
                 response=self.state.response,
                 agents=self.state.chosen_agents,
+                logs=self.state.logs,
             ).model_dump()
         )
 
@@ -105,6 +235,11 @@ class CephAgentsFlow(Flow[CephAgentsState]):
 
     def clear_memory(self):
         self.state.memory = []
+        self.state.logs = []
+
+    def get_current_logs(self):
+        """Get current execution logs."""
+        return [LogEntry(**log) for log in self.state.logs]
 
 
 if __name__ == "__main__":

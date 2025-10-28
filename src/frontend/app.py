@@ -3,6 +3,7 @@ from pathlib import Path
 
 import streamlit as st
 import torch
+
 torch.classes.__path__ = []  # add this line to manually set it to empty.
 
 sys.path.append(str(Path(__file__).parent.parent))
@@ -15,6 +16,22 @@ from frontend.helpers import (
     test_ssh_connection,
 )
 from orchestration.flow import Memory
+
+
+def format_log_icon(log_level: str, agent_name: str) -> str:
+    """Return appropriate icon based on log level and agent name."""
+    if log_level == "success":
+        return "✅"
+    elif log_level == "error":
+        return "❌"
+    elif log_level == "warning":
+        return "⚠️"
+    elif agent_name == "Orchestrator":
+        return "🔍"
+    elif agent_name == "Report Generator":
+        return "📝"
+    else:
+        return "🤖"
 
 
 # Class to handle individual chat sessions
@@ -169,6 +186,23 @@ with st.sidebar.expander("🕵️ Agent Memory", expanded=False):
             st.text_area(
                 "Agents", "\n".join(mem.agents), disabled=True, key=f"mem_a_{i}"
             )
+
+            # Display logs if available
+            if mem.logs:
+                show_logs = st.checkbox(
+                    "📋 Show Logs", key=f"mem_logs_toggle_{i}", value=False
+                )
+                if show_logs:
+                    for log_idx, log in enumerate(mem.logs):
+                        log_level = log.get("level", "info")
+                        agent_name = log.get("agent_name", "")
+                        log_message = log.get("message", "")
+                        timestamp = log.get("timestamp", "")
+                        icon = format_log_icon(log_level, agent_name)
+                        st.write(
+                            f"{icon} **{agent_name}** ({timestamp}): {log_message}"
+                        )
+            st.divider()
     else:
         st.write("No memory to display yet.")
 
@@ -197,6 +231,20 @@ for message in current_chat.messages:
             st.markdown(message["content"])
     elif role == "assistant":
         with st.chat_message("assistant"):
+            # Display logs if available in the message
+            logs = message.get("logs", [])
+            if logs:
+                with st.status("🔄 Agent Processing", expanded=False, state="complete"):
+                    for log in logs:
+                        log_level = log.get("level", "info")
+                        agent_name = log.get("agent_name", "")
+                        log_message = log.get("message", "")
+                        timestamp = log.get("timestamp", "")
+                        icon = format_log_icon(log_level, agent_name)
+                        st.write(
+                            f"{icon} **{agent_name}** ({timestamp}): {log_message}"
+                        )
+
             st.markdown(message["content"])
     else:
         st.markdown(message["content"], unsafe_allow_html=True)
@@ -210,8 +258,27 @@ if prompt := st.chat_input("Type your message here..."):
     with st.chat_message("assistant"):  # noqa: SIM117
         with st.spinner("🤔 Thinking..."):
             response = process_query(prompt)
+
+            # Get logs from session state
+            logs = st.session_state.get("current_logs", [])
+
+            # Display logs in a status container if available
+            if logs:
+                with st.status("🔄 Agent Processing", expanded=True, state="complete"):
+                    for log in logs:
+                        log_level = log.get("level", "info")
+                        agent_name = log.get("agent_name", "")
+                        message = log.get("message", "")
+                        timestamp = log.get("timestamp", "")
+                        icon = format_log_icon(log_level, agent_name)
+                        st.write(f"{icon} **{agent_name}** ({timestamp}): {message}")
+
             st.markdown(response)
-            current_chat.messages.append({"role": "assistant", "content": response})
+
+            # Store response with logs in chat history
+            current_chat.messages.append(
+                {"role": "assistant", "content": response, "logs": logs}
+            )
 
     st.rerun()
 

@@ -12,11 +12,19 @@ def process_query(prompt: str):
 
     if flow is not None:
         try:
+            # Clear logs from previous query
+            flow.state.logs = []
+
             result = flow.kickoff(inputs={"topic": prompt})
+
+            # Store logs in session state for UI access
+            st.session_state.current_logs = flow.state.logs
         except Exception as e:
             result = f"Error during flow execution: {e}"
+            st.session_state.current_logs = []
     else:
         result = "Flow is not initialized."
+        st.session_state.current_logs = []
 
     return result
 
